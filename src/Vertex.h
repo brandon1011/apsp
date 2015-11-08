@@ -11,12 +11,13 @@ using namespace std;
 class Vertex {
 public:
 	Vertex(vertex_t id);
-	edge_t add_edge(edge_t e);
+	edge_t 	add_edge(edge_t e);
 
 	/* Adj list accessors */
-	edge_t next(void);	/* Increment adj list iterator */
-	edge_t get(void);	
+	edge_t 	next(void);		/* Increment adj list iterator */
+	edge_t 	get(void);		/* Retrieve current edge in adj list */
 
+	int 	length(void);	/* Num edges in adjaceny list */
 	vertex_t get_id(void);
 
 private:
@@ -27,5 +28,10 @@ private:
 
 inline
 Vertex::Vertex(vertex_t tid): id(tid), it(0) {}
+
+inline int
+Vertex::length(void) {
+	return adj.size();
+}
 
 #endif //VERTEX_H
