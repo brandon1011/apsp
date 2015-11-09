@@ -12,6 +12,8 @@ class Graph {
 public:
 	Graph(int num_vertices);
 
+	Graph(string pathname);
+
 	/* Vertex adj list accessors */
 	shared_ptr<Edge> 	adj_get_edge(vertex_t v);
 	shared_ptr<Vertex> 	adj_get_vertex(vertex_t v);
@@ -21,9 +23,9 @@ public:
 	shared_ptr<Edge> 	add_edge(vertex_t u, vertex_t v, int cost);
 
 	shared_ptr<Vertex> 	get_vertex(vertex_t v);
-
+	shared_ptr<Edge>	get_edge(edge_t e);
 	
-private:
+protected:
 	vector<shared_ptr<Vertex>> 	vertex_list;
 	vector<shared_ptr<Edge>>	edge_list;
 };
@@ -31,6 +33,11 @@ private:
 inline shared_ptr<Vertex>
 Graph::get_vertex(vertex_t v) {
 	return (v >= vertex_list.size() || v < 0) ? nullptr : vertex_list.at(v);
+}
+
+inline shared_ptr<Edge>
+Graph::get_edge(edge_t e) {
+	return (e >= edge_list.size() || e < 0) ? nullptr : edge_list.at(e);
 }
 
 #endif //GRAPH_H

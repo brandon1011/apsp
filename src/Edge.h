@@ -10,6 +10,8 @@ class Edge {
 public:
 	Edge(edge_t id, vertex_t v, vertex_t u, int cost);
 	vertex_t 	adj(vertex_t x);
+	vertex_t	get_u(void);
+	vertex_t	get_v(void);
 	int 		get_cost(void);
 	edge_t		get_id(void);
 private:
@@ -23,20 +25,29 @@ inline
 Edge::Edge(edge_t tid, vertex_t tv, vertex_t tu, int cost): 
 	id(tid), v(tv), u(tu), cost(cost) {}
 
-inline
-vertex_t Edge::adj(vertex_t x) {
+inline vertex_t 
+Edge::adj(vertex_t x) {
 	if (x == u) return v;
 	else if (x == v) return u;
 	else return INVALID_VERTEX;
 }
 
-inline
-int Edge::get_cost(void) {
+inline vertex_t
+Edge::get_u(void) {
+	return u;
+}
+inline vertex_t
+Edge::get_v(void) {
+	return v;
+}
+
+inline int 
+Edge::get_cost(void) {
 	return cost;
 }
 
-inline
-int Edge::get_id(void) {
+inline int 
+Edge::get_id(void) {
 	return id;
 }
 
