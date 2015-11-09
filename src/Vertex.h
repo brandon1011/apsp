@@ -22,7 +22,7 @@ public:
 
 private:
 	vector<edge_t> adj;	// Adjacency list
-	vertex_t id;	// Unique id for this vertex
+	vertex_t id;		// Unique id for this vertex
 	int it;
 };
 
@@ -32,6 +32,11 @@ Vertex::Vertex(vertex_t tid): id(tid), it(0) {}
 inline int
 Vertex::length(void) {
 	return adj.size();
+}
+
+inline vertex_t
+Vertex::get_id() {
+	return id;
 }
 
 #endif //VERTEX_H

@@ -7,7 +7,7 @@ Graph::Graph(int num_v) {
 }
 
 shared_ptr<Edge>
-Graph::adj_get(vertex_t vid) {
+Graph::adj_get_edge(vertex_t vid) {
 	if (vid >= vertex_list.size())
 		return nullptr;
 	shared_ptr<Vertex> sp_v = vertex_list.at(vid);
@@ -25,13 +25,13 @@ Graph::adj_next(vertex_t vid) {
 		return nullptr;
 	shared_ptr<Vertex> sp_v = vertex_list.at(vid);
 	sp_v->next();
-	return adj_get(vid);
+	return adj_get_edge(vid);
 
 }
 
 shared_ptr<Vertex> 
-Graph::adj_vertex(vertex_t v) {
-	shared_ptr<Edge> edge = adj_get(v);
+Graph::adj_get_vertex(vertex_t v) {
+	shared_ptr<Edge> edge = adj_get_edge(v);
 	if (edge == nullptr) return nullptr;
 
 	vertex_t vid = edge->adj(v);
@@ -43,8 +43,17 @@ Graph::adj_vertex(vertex_t v) {
 shared_ptr<Edge>
 Graph::add_edge(vertex_t u, vertex_t v, int cost) {
 	edge_t eid = edge_list.size();
-	/* Check bounds of u, v in v list*/
+
+	/* Check bounds of u,v */
+	if (u >= vertex_list.size() || v >= vertex_list.size()) 
+		return nullptr;
+
+	/* Add new edge to u,v adj list */
+	vertex_list.at(u)->add_edge(eid);
+	vertex_list.at(v)->add_edge(eid);
+
 	shared_ptr<Edge> sp_e = make_shared<Edge>(Edge(eid, u, v, cost));
-	/* Add sp_e to edge_list and add eid to u, v adj list*/
+	edge_list.push_back(sp_e);	/* Append to edge list */
+
 	return sp_e;
 }
