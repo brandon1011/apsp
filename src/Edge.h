@@ -9,6 +9,7 @@
 class Edge {
 public:
 	Edge(edge_t id, vertex_t v, vertex_t u, double cost);
+	
 	vertex_t 	adj(vertex_t x);
 	vertex_t	get_u(void);
 	vertex_t	get_v(void);

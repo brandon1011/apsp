@@ -10,11 +10,17 @@ using namespace std;
 class FloydWarshall : public Graph {
 public:
 	FloydWarshall(string pathname);
+	double lookup(vertex_t v, vertex_t u);
 
 private:
 	void 	planPaths(void);
 	int		num_vertices;
-	vector<vector<int>>	distance_table;	/* element[i][j] is distance btw vertex i & j */
+	vector<vector<double>>	distance_table;	/* element[i][j] is distance btw vertex i & j */
 };
+
+inline double
+FloydWarshall::lookup(vertex_t v, vertex_t u) {
+	return distance_table.at(u).at(v);
+}
 
 #endif //FLOYD_WARSHALL_H

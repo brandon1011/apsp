@@ -2,13 +2,13 @@
 #include <limits>
 
 FloydWarshall::FloydWarshall(string pathname): Graph(pathname) {
-	int infty = std::numeric_limits<int>::max();
+	double infty = std::numeric_limits<double>::max();
 	num_vertices = vertex_list.size();
-	distance_table = vector<vector<int> >(num_vertices);
+	distance_table = vector<vector<double> >(num_vertices);
 
 	for(int i=0; i<num_vertices; i++) {
 		/* Initialize distance between each i,j to infinity */
-		distance_table.at(i) = vector<int>(num_vertices, infty);
+		distance_table.at(i) = vector<double>(num_vertices, infty);
 	}
 	planPaths();
 }
