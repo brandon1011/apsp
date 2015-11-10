@@ -29,7 +29,7 @@ FloydWarshall::planPaths(void) {
 		distance_table.at(v).at(u) = e->get_cost();
 		distance_table.at(u).at(v) = e->get_cost();
 	}
-
+	
 	for (int k=0; k<num_vertices;k++) {
 		for (int i=0; i<num_vertices; i++) {
 			for (int j=0; j<num_vertices; j++) {
