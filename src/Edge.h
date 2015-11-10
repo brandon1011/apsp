@@ -8,21 +8,21 @@
 
 class Edge {
 public:
-	Edge(edge_t id, vertex_t v, vertex_t u, int cost);
+	Edge(edge_t id, vertex_t v, vertex_t u, double cost);
 	vertex_t 	adj(vertex_t x);
 	vertex_t	get_u(void);
 	vertex_t	get_v(void);
-	int 		get_cost(void);
+	double 		get_cost(void);
 	edge_t		get_id(void);
 private:
-	int 		cost;	// Edge cost
+	double 		cost;	// Edge cost
 	edge_t		id;		// Edge identifier
 	vertex_t	u;
 	vertex_t	v;
 };
 
 inline
-Edge::Edge(edge_t tid, vertex_t tv, vertex_t tu, int cost): 
+Edge::Edge(edge_t tid, vertex_t tv, vertex_t tu, double cost): 
 	id(tid), v(tv), u(tu), cost(cost) {}
 
 inline vertex_t 
@@ -41,7 +41,7 @@ Edge::get_v(void) {
 	return v;
 }
 
-inline int 
+inline double 
 Edge::get_cost(void) {
 	return cost;
 }

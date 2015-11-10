@@ -1,14 +1,14 @@
 #include "FloydWarshall.h"
 #include <limits>
 
-FloydWarshall::FloydWarshall(string pathname) {
+FloydWarshall::FloydWarshall(string pathname): Graph(pathname) {
 	int infty = std::numeric_limits<int>::max();
 	num_vertices = vertex_list.size();
 	distance_table = vector<vector<int> >(num_vertices);
 
 	for(int i=0; i<num_vertices; i++) {
 		/* Initialize distance between each i,j to infinity */
-		distance_table.at(i) = vector<vector<int>(num_vertices, infty);
+		distance_table.at(i) = vector<int>(num_vertices, infty);
 	}
 	planPaths();
 }
@@ -29,14 +29,15 @@ FloydWarshall::planPaths(void) {
 		distance_table.at(v).at(u) = e->get_cost();
 		distance_table.at(u).at(v) = e->get_cost();
 	}
-	
+
 	for (int k=0; k<num_vertices;k++) {
 		for (int i=0; i<num_vertices; i++) {
 			for (int j=0; j<num_vertices; j++) {
 				int ab = distance_table.at(i).at(j);
 				int ac = distance_table.at(i).at(k);
 				int cb = distance_table.at(k).at(j);
-				if (ab > ac + ab) {
+				
+				if (ab > ac + cb) {
 					distance_table.at(i).at(j) = ac + cb;
 				}
 			}

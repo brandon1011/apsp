@@ -20,10 +20,12 @@ public:
 	shared_ptr<Edge> 	adj_next(vertex_t v);
 
 	/* Add edge to the graph */
-	shared_ptr<Edge> 	add_edge(vertex_t u, vertex_t v, int cost);
+	shared_ptr<Edge> 	add_edge(vertex_t u, vertex_t v, double cost);
 
 	shared_ptr<Vertex> 	get_vertex(vertex_t v);
 	shared_ptr<Edge>	get_edge(edge_t e);
+
+	void 				display(void);
 	
 protected:
 	vector<shared_ptr<Vertex>> 	vertex_list;
