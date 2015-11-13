@@ -25,7 +25,9 @@ public:
 	shared_ptr<Vertex> 	get_vertex(vertex_t v);
 	shared_ptr<Edge>	get_edge(edge_t e);
 
-	void 				display(void);
+	int		get_num_vertices(void);
+	int		get_num_edges(void);
+	void	display(void);
 	
 protected:
 	vector<shared_ptr<Vertex>> 	vertex_list;
@@ -40,6 +42,16 @@ Graph::get_vertex(vertex_t v) {
 inline shared_ptr<Edge>
 Graph::get_edge(edge_t e) {
 	return (e >= edge_list.size() || e < 0) ? nullptr : edge_list.at(e);
+}
+
+inline int
+Graph::get_num_vertices(void) {
+	return vertex_list.size();
+}
+
+inline int
+Graph::get_num_edges(void) {
+	return edge_list.size();
 }
 
 #endif //GRAPH_H

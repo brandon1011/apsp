@@ -28,7 +28,6 @@ Kruskall::findMST(void) {
 			mst.push_back(edge);
 		}
 	}
-
 	/* Replace edge_list with Minimum spanning tree */
 	edge_list = vector<shared_ptr<Edge> >(mst);
 }

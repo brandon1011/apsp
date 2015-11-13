@@ -23,6 +23,9 @@ FloydWarshall::planPaths(void) {
 	/* For each edge e = (u,v), distance(u,v) = cost(e) */
 	for (int i=0; i<edge_list.size(); i++) {
 		shared_ptr<Edge> e = edge_list.at(i);
+
+		//std::cout << "w=" << e->get_cost() << std::endl;
+
 		vertex_t v = e->get_v();
 		vertex_t u = e->get_u();
 
@@ -30,18 +33,19 @@ FloydWarshall::planPaths(void) {
 		distance_table.at(u).at(v) = e->get_cost();
 	}
 
+	
 	for (int k=0; k<num_vertices;k++) {
 		for (int i=0; i<num_vertices; i++) {
 			for (int j=0; j<num_vertices; j++) {
-				int ab = distance_table.at(i).at(j);
-				int ac = distance_table.at(i).at(k);
-				int cb = distance_table.at(k).at(j);
+				double ab = distance_table.at(i).at(j);
+				double ac = distance_table.at(i).at(k);
+				double cb = distance_table.at(k).at(j);
 				
 				if (ab > ac + cb) {
 					distance_table.at(i).at(j) = ac + cb;
 				}
 			}
 		}
-	}
+	} 
 
 }
