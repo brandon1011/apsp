@@ -1,7 +1,5 @@
 #include "UnionFind.h"
 
-#include <iostream>
-
 UnionFind::UnionFind(int num) {
 	for (int i=0; i<num; i++) {
 		shared_ptr<Node> nd = make_shared<Node>(i);
