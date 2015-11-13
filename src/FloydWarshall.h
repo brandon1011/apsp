@@ -9,7 +9,7 @@ using namespace std;
 
 class FloydWarshall : public Graph {
 public:
-	FloydWarshall(string pathname);
+	FloydWarshall(const Graph& g);
 	double lookup(vertex_t v, vertex_t u);
 
 private:

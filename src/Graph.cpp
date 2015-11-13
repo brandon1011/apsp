@@ -10,6 +10,9 @@ Graph::Graph(int num_v) {
 	}
 }
 
+Graph::Graph(const Graph& other): 
+	vertex_list(other.vertex_list), edge_list(other.edge_list) {}
+
 Graph::Graph(string pathname) {
 	string line;
 	int len;	/* Num vertices in the graph */

@@ -1,7 +1,7 @@
 #include "FloydWarshall.h"
 #include <limits>
 
-FloydWarshall::FloydWarshall(string pathname): Graph(pathname) {
+FloydWarshall::FloydWarshall(const Graph& g): Graph(g) {
 	double infty = std::numeric_limits<double>::max();
 	num_vertices = vertex_list.size();
 	distance_table = vector<vector<double> >(num_vertices);

@@ -7,7 +7,7 @@
 /* Kruskall's Alg for minimum spanning tree */
 class Kruskall : public Graph {
 public:
-	Kruskall(string pathname);
+	Kruskall(const Graph& other);
 	vector<shared_ptr<Edge> > getMST();
 private:
 	void findMST(void);

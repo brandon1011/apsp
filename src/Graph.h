@@ -3,7 +3,7 @@
 
 #include "Edge.h"
 #include "Vertex.h"
-
+ 
 #include <vector>
 #include <memory>
 using namespace std;
@@ -11,7 +11,7 @@ using namespace std;
 class Graph {
 public:
 	Graph(int num_vertices);
-
+	Graph(const Graph& other);	/* Copy constructor */
 	Graph(string pathname);
 
 	/* Vertex adj list accessors */

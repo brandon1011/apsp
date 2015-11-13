@@ -9,7 +9,7 @@ bool compareEdges(shared_ptr<Edge> a, shared_ptr<Edge> b) {
 	return a->get_cost() < b->get_cost();
 }
 
-Kruskall::Kruskall(string pathname): Graph(pathname) {
+Kruskall::Kruskall(const Graph& other): Graph(other) {
 	findMST();
 }
 
@@ -28,4 +28,7 @@ Kruskall::findMST(void) {
 			mst.push_back(edge);
 		}
 	}
+
+	/* Replace edge_list with Minimum spanning tree */
+	edge_list = vector<shared_ptr<Edge> >(mst);
 }
