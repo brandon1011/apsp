@@ -11,3 +11,6 @@ This is an implementation of a Statistical Algorithm for the "All Pairs Shortest
 * Change FloydWarshall to accept as an argument a Graph
 * Modify Kruskall to delete edges in its graph that are not in MST
 * Perform tests to compare cost vs speed of Kruskall vs Floyd Warshall
+
+### Issues
+* Implementation of Dijkstra's Alg uses static data to implement priority queue. This implementation is not thread safe and does not allow multiple concurrent instantiations of Dijkstra. 

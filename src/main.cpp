@@ -3,8 +3,7 @@
 #include "Kruskall.h"
 #include "TestBench.h"
 
-#include "../test/graph_test.h"
-#include "../test/union_find_test.h"
+#include "Test.h"
 
 int main() {
 	/*
@@ -34,6 +33,8 @@ int main() {
 	for (int i=0; i<10; i++) {
 		t.next();
 	}
+
+	dijkstra_test1();
 
 
 	return 0;

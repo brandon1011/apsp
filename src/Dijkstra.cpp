@@ -12,6 +12,11 @@ cmp(vertex_t u, vertex_t v) {
 
 Dijkstra::Dijkstra(const Graph& g): Graph(g), source(0) {}
 
+double
+Dijkstra::dist_from_source(vertex_t u) {
+	return dist.at(u);
+}
+
 void
 Dijkstra::shortest_path(void) {
 	int len = get_num_vertices();

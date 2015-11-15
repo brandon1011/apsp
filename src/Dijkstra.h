@@ -8,6 +8,7 @@ class Dijkstra : public Graph {
 public:
 	Dijkstra(const Graph& g);
 	bool set_source(vertex_t v);
+	double	dist_from_source(vertex_t u);
 private:
 	void	shortest_path(void);
 	//bool 	cmp_dist(vertex_t u, vertex_t v);
@@ -22,6 +23,8 @@ Dijkstra::set_source(vertex_t v) {
 	if (v<0 || v >= vertex_list.size()) 
 		return false;
 	source = v;
+	shortest_path();
+
 	return true;
 }
 
