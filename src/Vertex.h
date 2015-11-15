@@ -19,6 +19,7 @@ public:
 
 	int 	length(void);	/* Num edges in adjaceny list */
 	vertex_t get_id(void);
+	vector<edge_t>	get_adj(void);
 
 private:
 	vector<edge_t> adj;	// Adjacency list
@@ -37,6 +38,11 @@ Vertex::length(void) {
 inline vertex_t
 Vertex::get_id() {
 	return id;
+}
+
+inline vector<edge_t>
+Vertex::get_adj(void) {
+	return adj;
 }
 
 #endif //VERTEX_H

@@ -25,6 +25,8 @@ public:
 	shared_ptr<Vertex> 	get_vertex(vertex_t v);
 	shared_ptr<Edge>	get_edge(edge_t e);
 
+	static bool	compare_edges(shared_ptr<Edge> a, shared_ptr<Edge> b);
+
 	int		get_num_vertices(void);
 	int		get_num_edges(void);
 	void	display(void);

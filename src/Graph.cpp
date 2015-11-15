@@ -102,6 +102,11 @@ Graph::add_edge(vertex_t u, vertex_t v, double cost) {
 	return sp_e;
 }
 
+bool
+Graph::compare_edges(shared_ptr<Edge> a, shared_ptr<Edge> b) {
+	return a->get_cost() < b->get_cost();
+}
+
 void
 Graph::display(void) {
 	std::cout<<"Num vertices = "<<vertex_list.size()<<"\nEdges in the graph:\n";

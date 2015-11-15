@@ -5,10 +5,6 @@
 #include <algorithm> /* std::sort */
 #include <memory>
 
-bool compareEdges(shared_ptr<Edge> a, shared_ptr<Edge> b) {
-	return a->get_cost() < b->get_cost();
-}
-
 Kruskall::Kruskall(const Graph& other): Graph(other) {
 	findMST();
 }
@@ -16,7 +12,7 @@ Kruskall::Kruskall(const Graph& other): Graph(other) {
 void
 Kruskall::findMST(void) {
 	UnionFind sets(vertex_list.size()); /* Make |V| singleton sets for v in V */
-	sort(edge_list.begin(), edge_list.end(), compareEdges);
+	sort(edge_list.begin(), edge_list.end(), Graph::compare_edges);
 
 	/* For ea edge e=(u,v), if set(u) != set(v), add edge and union set(u) U set(v) */
 	for (auto edge: edge_list) {
