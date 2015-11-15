@@ -3,38 +3,30 @@
 #include <set>
 using namespace std;
 
-static vector<double> dist;
-
-static bool
-cmp(vertex_t u, vertex_t v) {
-	return (dist.at(u) < dist.at(v));
+bool
+Dijkstra::cmp(Element u, Element v) {
+	return (u.val < v.val);
 }
 
 Dijkstra::Dijkstra(const Graph& g): Graph(g), source(0) {}
-
-double
-Dijkstra::dist_from_source(vertex_t u) {
-	return dist.at(u);
-}
 
 void
 Dijkstra::shortest_path(void) {
 	int len = get_num_vertices();
 
-	set<int,bool(*)(int,int)> q(cmp);
-	//set<int,bool(*)(int,int)> queue(cmp_dist);
+	set<Element,bool(*)(Element,Element)> q(Dijkstra::cmp);
 
 	dist = vector<double>(len, INFINITY);
 	prev = vector<vertex_t>(len, -1);
 
 	dist.at(source) = 0; /* Distance from source to source */
 	for (int i=0; i<len; i++) {
-		q.insert(i);
+		q.insert(Element(i,dist.at(i)));
 	}
 
 	while (!q.empty()) {
 		auto top = q.begin();	/* Visit v in queue with min dist */
-		auto v = get_vertex(*top);
+		auto v = get_vertex(top->key);
 		q.erase(top);
 
 		/* For ea vertex u in adj(v) */
@@ -46,9 +38,9 @@ Dijkstra::shortest_path(void) {
 
 			/* If dist(v) + e < dist(u), update dist(u) */
 			if (alt < dist.at(u)) {	
-				q.erase(u);
+				q.erase(Element(u,dist.at(u)));
 				dist.at(u) = alt;
-				q.insert(u);
+				q.insert(Element(u,alt));
 				prev.at(u) = v->get_id();
 			}
 		}
