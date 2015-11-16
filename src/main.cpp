@@ -42,7 +42,7 @@ int main() {
 	FeatureGen f("test.txt");
 	f.add_graph("../graphs/v1000_test1_0.txt");
 	f.compute_features();
-	f.write_output();
+	f.write_output(); 
 
 	return 0;
 }
