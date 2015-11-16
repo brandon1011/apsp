@@ -2,11 +2,15 @@
 #define DIJKSTRA_TEST_H
 
 #include "../src/Dijkstra.h"
+#include "../src/FloydWarshall.h"
 #include "../src/Graph.h"
 
 #include <iostream>
 #include <cassert>
+#include <string>
 using namespace std;
+
+#define THRESHOLD 1E-15
 
 inline void
 dijkstra_test1(void) {
@@ -34,4 +38,28 @@ dijkstra_test1(void) {
 
 }
 
+inline void
+compare_algs(string graphName) {
+	Graph g(graphName);
+	int len = g.get_num_vertices();
+	Dijkstra d(g);
+	FloydWarshall f(g);
+
+	double d1,d2,diff;
+
+	for (int i=0; i<len; i++) {
+		d.set_source(i);
+		for (int j=0; j<len; j++) {
+			d1 = d.dist_from_source(j);
+			d2 = f.lookup(i,j);
+			diff = (d1 > d2) ? d1-d2 : d2-d1;
+
+			if (diff > THRESHOLD) {
+				cout << i << "," << j <<  "\t" << diff << endl;
+				assert(false);
+			}
+		}
+	}
+	cout << "Tests for Dijkstra and Floyd Warshall are equivalent\n";
+}
 #endif //DIJKSTRA_TEST_H

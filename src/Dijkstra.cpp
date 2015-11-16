@@ -8,7 +8,10 @@ Dijkstra::cmp(Element u, Element v) {
 	return (u.val < v.val);
 }
 
-Dijkstra::Dijkstra(const Graph& g): Graph(g), source(0) {}
+Dijkstra::Dijkstra(const Graph& g): Graph(g), source(0) {
+	int num_edges = get_num_edges();
+	edge_count = vector<int>(num_edges);
+}
 
 void
 Dijkstra::shortest_path(void) {
@@ -37,7 +40,8 @@ Dijkstra::shortest_path(void) {
 			double alt = dist.at(v->get_id()) + edge->get_cost();
 
 			/* If dist(v) + e < dist(u), update dist(u) */
-			if (alt < dist.at(u)) {	
+			if (alt < dist.at(u)) {
+				edge_count.at(e)++;
 				q.erase(Element(u,dist.at(u)));
 				dist.at(u) = alt;
 				q.insert(Element(u,alt));

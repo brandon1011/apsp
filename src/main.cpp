@@ -35,6 +35,7 @@ int main() {
 	}
 
 	dijkstra_test1();
+	compare_algs("../graphs/v1000_test1_0.txt");
 
 
 	return 0;

@@ -9,6 +9,8 @@ public:
 	Dijkstra(const Graph& g);
 	bool set_source(vertex_t v);
 	double	dist_from_source(vertex_t u);
+
+	vector<int>	get_edge_count(void);
 private:
 	struct  Element {
 		int 	key;
@@ -20,6 +22,7 @@ private:
 
 
 	vertex_t		source;		/* Source v */
+	vector<int>		edge_count;	/* Num of occurences in shortest paths*/
 	vector<double>		dist;	/* Distance btw ea v in V and source */
 	vector<vertex_t>	prev;	/* Prev u in shortest path from source to v */
 };
@@ -39,4 +42,8 @@ Dijkstra::dist_from_source(vertex_t u) {
 	return dist.at(u);
 }
 
+inline vector<int>
+Dijkstra::get_edge_count(void) {
+	return edge_count;
+}
 #endif //DIJKSTRA_H
