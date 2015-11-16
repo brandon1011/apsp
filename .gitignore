@@ -1,5 +1,6 @@
 papers/
 graphs/
+data/
 apsp
 *.swp
 *.o

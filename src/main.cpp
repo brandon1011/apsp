@@ -2,6 +2,7 @@
 #include "FloydWarshall.h"
 #include "Kruskall.h"
 #include "TestBench.h"
+#include "FeatureGen.h"
 
 #include "Test.h"
 
@@ -27,7 +28,7 @@ int main() {
 			cout << i << "," << j << " d=" << fw.lookup(i,j) << endl;
 		}
 	} */
-
+	/*
 	TestBench t("v100_test1", 100);
 
 	for (int i=0; i<10; i++) {
@@ -36,7 +37,12 @@ int main() {
 
 	dijkstra_test1();
 	compare_algs("../graphs/v1000_test1_0.txt");
+	*/
 
+	FeatureGen f("test.txt");
+	f.add_graph("../graphs/v1000_test1_0.txt");
+	f.compute_features();
+	f.write_output();
 
 	return 0;
 }
