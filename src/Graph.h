@@ -27,6 +27,8 @@ public:
 
 	static bool	compare_edges(shared_ptr<Edge> a, shared_ptr<Edge> b);
 
+	double	min_edge_v(vertex_t v);	/* Min cost edge in adj(v) */
+
 	int		get_num_vertices(void);
 	int		get_num_edges(void);
 	void	display(void);

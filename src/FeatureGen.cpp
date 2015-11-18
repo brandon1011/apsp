@@ -44,7 +44,25 @@ FeatureGen::get_edge_weights(void) {
 
 void 
 FeatureGen::get_graph_properties(void) {
+	int num_graphs = graphs.size();
+	int num_edges;
+	double accum, avg;
 
+	for (int i=0; i<num_graphs; i++) {
+		auto graph_ptr = graphs.at(i);
+		num_edges = graph_ptr->get_num_edges();
+		accum = 0;
+
+		for (int j=0; j<num_edges; j++) {
+			auto edge = graph_ptr->get_edge(j);
+			accum += edge->get_cost();
+		}
+		avg = accum/num_edges;
+		for (int j=0; j<num_edges; j++) {
+			avg_weight.push_back(avg);
+			this->num_edges.push_back(num_edges);
+		}
+	}
 }
 
 /* Vertex connectivity
@@ -77,7 +95,30 @@ FeatureGen::get_vertex_connectivity(void) {
 		}
 	}
 }
+/* For ea edge e=(u,v) in E, return min cost of edges in adj(u) U adj(v) */
+void
+FeatureGen::get_min_adj_edge(void) {
+	int num_graphs = graphs.size();
+	int num_edges;
 
+	double min, min_u, min_v;
+
+	for (int i=0; i<num_graphs; i++) {
+		auto graph_ptr = graphs.at(i);
+		num_edges = graph_ptr->get_num_edges();
+
+		for (int j=0; j<num_edges; j++) {
+			auto edge = graph_ptr->get_edge(j);
+			vertex_t uid = edge->get_u();
+			vertex_t vid = edge->get_v();
+
+			min_u = graph_ptr->min_edge_v(uid);
+			min_v = graph_ptr->min_edge_v(vid);
+			min = (min_u < min_v) ? min_u : min_v;
+			min_adj_edge.push_back(min);
+		}
+	}
+}
 void 
 FeatureGen::write_output(void) {
 	ofstream output(OUTPUT_DIR + outfile);
@@ -87,6 +128,9 @@ FeatureGen::write_output(void) {
 	}
 	for (int i=0; i<edge_usage.size();i++) {
 		output << edge_usage.at(i) << "," << edge_weights.at(i)  << "," 
-			<< max_connect.at(i) << "," << min_connect.at(i) << "\n";
+			<< max_connect.at(i) << "," << min_connect.at(i) << "," 
+			<< min_adj_edge.at(i) << "," 
+			/* Graph properties */
+			<< avg_weight.at(i) << "," << num_edges.at(i) << "\n";
 	}
 }

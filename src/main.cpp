@@ -41,6 +41,8 @@ int main() {
 
 	FeatureGen f("test.txt");
 	f.add_graph("../graphs/v1000_test1_0.txt");
+	f.add_graph("../graphs/v1000_test1_1.txt");
+	f.add_graph("../graphs/v1000_test1_2.txt");
 	f.compute_features();
 	f.write_output(); 
 

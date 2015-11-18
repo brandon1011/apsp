@@ -119,3 +119,16 @@ Graph::display(void) {
 		std::cout << "(" << u << "," << v << ")\tc=" << cost << std::	endl;
 	}
 }
+
+double
+Graph::min_edge_v(vertex_t v) {
+	auto vertex = get_vertex(v);
+	auto adj_list = vertex->get_adj();
+
+	double min = get_edge(0)->get_cost();
+	for (auto e : adj_list) {
+		double cost = get_edge(e)->get_cost();
+		if (cost < min) min = cost;
+	}
+	return min;
+}
