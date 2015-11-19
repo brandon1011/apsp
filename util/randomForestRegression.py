@@ -53,6 +53,8 @@ class SubGraph(object):
 	def predict(self, model):
 		prediction = model.predict(self.features[:,1:])
 		self.edge_list = map(lambda x: x > COST_THRESHOLD, prediction)
+		reduction = reduce(lambda x,y: x+1 if not y else x, self.edge_list)
+		print str(reduction) + ' edges elminated...' 
 
 	def init_graph(self):
 		self.num_v = int(self.graph.readline())
@@ -71,16 +73,31 @@ class SubGraph(object):
 		self.graph.close()
 
 if __name__ == "__main__":
-	print "Given input graphs, prune edge based on usefulness heuristic.\n" +
-		"Requires features generated on each graph, writes resulting graph to" +
+	print "Given input graphs, prune edge based on usefulness heuristic.\n" + \
+		"Requires features generated on each graph, writes resulting graph to" + \
 		"graphs/subgraphs/ directory"
 	try:
-		numGraphs = int(sys.arg[1])
-		namePrefix = sys.arg[3]
+		numGraphs = int(sys.argv[1])
+		namePrefix = sys.argv[2]
 	except (IndexError, ValueError) as e:
 		print "ERROR! Invalid arguments. Usage:"
 		print "\tARG[1] = Number of graphs to predict"
-		pritn "\tARG[2] = Name prefix for the input/output files"
+		print "\tARG[2] = Name prefix for the input/output files"
+		exit()
+
+	print '==============\nLoading model...'
+	model = RegressionModel()
+	model.loadModel()
+
+	for i in range(numGraphs):
+		filename = namePrefix + '_' + str(i)
+		print 'Edge pruning on ' + filename
+		g = SubGraph(filename + '.txt', filename + '.csv')
+		g.predict(model)
+		g.generate_subgraph()
+	print 'Done!'
+
+
 
 
 

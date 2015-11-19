@@ -34,4 +34,11 @@ build_feature_set(string prefix, int num_graphs) {
 	}
 }
 
+inline void
+compare_results(string prefix, int num_graphs) {
+	TestBench tb(prefix, num_graphs);
+	for (int i=0; i<num_graphs; i++) {
+		tb.next();
+	}
+}
 #endif // UTIL_H

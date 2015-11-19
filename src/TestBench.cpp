@@ -57,7 +57,11 @@ TestBench::next(void) {
 	avg_percent_slowdown = accum_percent_slowdown/(1.0*count);
 
 	results.push_back(stats(avg, accum));
-	cout << "Average difference=" << avg << endl;
+	cout << "Num Edges in original graph=" << graph.get_num_edges() << endl;
+	cout << "Num_Edges in  reduced graph=" << alt_graph.get_num_edges() << endl;
+	cout << "Reduction=" << alt_graph.get_num_edges()*1.0/graph.get_num_edges() << endl;
+
+	cout << "Average path difference=" << avg << endl;
 	cout << "Total difference=" << accum << endl;
-	cout << "Average percent slowdown=" << avg_percent_slowdown << endl;
+	cout << "Average percent cost increase=" << avg_percent_slowdown << endl;
 }
