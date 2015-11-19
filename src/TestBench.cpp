@@ -32,7 +32,7 @@ TestBench::next(void) {
 	double 	accum_percent_slowdown = 0;
 	double	avg;
 	double	avg_percent_slowdown;
-	int 	count;
+	int 	count = 0;
 
 	for (int i=0; i<num_vertices; i++)
 		cerr << "(0," << i << ") " << alg.lookup(0,i) << "\t" << opt.lookup(0,i) <<  endl;
@@ -44,6 +44,17 @@ TestBench::next(void) {
 		for (int j=i; j<num_vertices; j++) {
 			t1 = alg.lookup(i,j);
 			t0 = opt.lookup(i,j);
+
+			if (t0 == INFINITY) {
+				cout << "Graph unsolvable\n";
+				cerr << "Graph " << current << " cannot be solved\n";
+				return;
+			}
+			if (t1 == INFINITY) {
+				cout << "Reduction disconnected graph\n";
+				cerr << "Graph " << current << " no longer solvable\n";
+				return;
+			}
 
 			++count;
 			diff = t1-t0;
@@ -60,8 +71,8 @@ TestBench::next(void) {
 	cout << "Num Edges in original graph=" << graph.get_num_edges() << endl;
 	cout << "Num_Edges in  reduced graph=" << alt_graph.get_num_edges() << endl;
 	cout << "Reduction=" << alt_graph.get_num_edges()*1.0/graph.get_num_edges() << endl;
-
-	cout << "Average path difference=" << avg << endl;
 	cout << "Total difference=" << accum << endl;
-	cout << "Average percent cost increase=" << avg_percent_slowdown << endl;
+	cout << "\tcount=" << count << endl;
+	cout << "Average path difference=" << avg << endl;
+	cout << "Average percent cost increase=" << avg_percent_slowdown << "\n\n";
 }

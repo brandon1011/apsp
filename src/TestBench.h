@@ -2,7 +2,7 @@
 #define TEST_BENCH_H
 
 #define GRAPH_DIR "../graphs/"
-#define SUBGRAPH_DIR "../graphs/subgraphs"
+#define SUBGRAPH_DIR "../graphs/subgraphs/"
 
 #include "Graph.h"
 #include "FloydWarshall.h"

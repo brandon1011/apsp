@@ -41,7 +41,7 @@ class RegressionModel(object):
 class SubGraph(object):
 	def __init__(self, graph_file, feature_file):
 		self.graph_file = graph_file
-		self.feature_filees = genfromtxt(DATA_DIR + feature_file, delimiter=',')
+		self.features = genfromtxt(DATA_DIR + feature_file, delimiter=',')
 
 		try:
 			self.graph = open(GRAPH_DIR + graph_file)
@@ -64,7 +64,7 @@ class SubGraph(object):
 		i = 0
 
 		output.write(str(self.num_v) + '\n')
-		for edge in selfgraph:
+		for edge in self.graph:
 			if self.edge_list[i]:
 				output.write(edge)
 			i = i+1

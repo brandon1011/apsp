@@ -2,6 +2,7 @@ papers/
 report/
 models/
 graphs/
+results/
 data/
 apsp
 *.swp

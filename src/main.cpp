@@ -9,6 +9,7 @@
 int main() {
 	/* TestBench t("cmp", 1);
 	t.next(); */
-	build_feature_set("v1000_test1", 100);
+	//build_feature_set("v1000_test1", 100);
+	compare_results("v1000_test1", 100);
 	return 0;
 }
