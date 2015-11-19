@@ -39,10 +39,13 @@ int main() {
 	compare_algs("../graphs/v1000_test1_0.txt");
 	*/
 
-	FeatureGen f("test.txt");
+	FeatureGen f("training.csv");
 	f.add_graph("../graphs/v1000_test1_0.txt");
 	f.add_graph("../graphs/v1000_test1_1.txt");
 	f.add_graph("../graphs/v1000_test1_2.txt");
+	f.add_graph("../graphs/v1000_test1_3.txt");
+	f.add_graph("../graphs/v1000_test1_4.txt");
+
 	f.compute_features();
 	f.write_output(); 
 

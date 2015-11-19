@@ -1,6 +1,9 @@
 papers/
+report/
+models/
 graphs/
 data/
 apsp
 *.swp
 *.o
+*.pyc
