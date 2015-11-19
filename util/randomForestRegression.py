@@ -1,14 +1,17 @@
 #!/usr/bin/python
+import sys
 
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.externals import joblib
 from numpy import genfromtxt
 
-GRAPH_LIB = '/home/brandon/apsp/graphs/'
+GRAPH_DIR = '/home/brandon/apsp/graphs/'
 
-DATA_LIB = '/home/brandon/apsp/data/'
+DATA_DIR = '/home/brandon/apsp/data/'
 MODEL_LIB = '/home/brandon/apsp/models/'
 MODEL_NAME = 'RandomForestModel_v1'
+
+COST_THRESHOLD = 30
 
 
 class RegressionModel(object):
@@ -16,7 +19,7 @@ class RegressionModel(object):
 		self.model = None
 
 	def buildModel(self):
-		data = genfromtxt(DATA_LIB+'training.csv', delimiter=',')
+		data = genfromtxt(DATA_DIR+'training.csv', delimiter=',')
 		labels = data[:,0]
 		samples = data[:,1:]
 
@@ -33,6 +36,51 @@ class RegressionModel(object):
 			print 'Error! Model has not been loaded'
 			return
 		return self.model.predict(data)
+
+
+class SubGraph(object):
+	def __init__(self, graph_file, feature_file):
+		self.graph_file = graph_file
+		self.feature_filees = genfromtxt(DATA_DIR + feature_file, delimiter=',')
+
+		try:
+			self.graph = open(GRAPH_DIR + graph_file)
+			self.init_graph()
+
+		except IOError as e:
+			print 'IO Error! Cannot open graph ' + graph_file
+
+	def predict(self, model):
+		prediction = model.predict(self.features[:,1:])
+		self.edge_list = map(lambda x: x > COST_THRESHOLD, prediction)
+
+	def init_graph(self):
+		self.num_v = int(self.graph.readline())
+
+	def generate_subgraph(self):
+		output = open(GRAPH_DIR + 'subgraphs/' + self.graph_file, 'w')
+		i = 0
+
+		output.write(str(self.num_v) + '\n')
+		for edge in selfgraph:
+			if self.edge_list[i]:
+				output.write(edge)
+			i = i+1
+
+		output.close()
+		self.graph.close()
+
+if __name__ == "__main__":
+	print "Given input graphs, prune edge based on usefulness heuristic.\n" +
+		"Requires features generated on each graph, writes resulting graph to" +
+		"graphs/subgraphs/ directory"
+	try:
+		numGraphs = int(sys.arg[1])
+		namePrefix = sys.arg[3]
+	except (IndexError, ValueError) as e:
+		print "ERROR! Invalid arguments. Usage:"
+		print "\tARG[1] = Number of graphs to predict"
+		pritn "\tARG[2] = Name prefix for the input/output files"
 
 
 

@@ -13,13 +13,20 @@ TestBench::next(void) {
 	cout << "Starting test " << current << endl;
 	string filename(GRAPH_DIR + prefix + "_" + to_string(current) + ".txt");
 	Graph graph(filename);
+
+
+	string alt_filename(SUBGRAPH_DIR + prefix + "_" + 
+		to_string(current) + ".txt");
+	Graph alt_graph(alt_filename);
+
 	current++;
 
 	int num_vertices = graph.get_num_vertices();
 
-	Kruskall mst(graph);
+	//Kruskall mst(graph);
 	FloydWarshall opt(graph);
-	FloydWarshall alg(mst);
+	//FloydWarshall alg(mst);
+	FloydWarshall alg(alt_graph);
 
 	double 	accum = 0;
 	double 	accum_percent_slowdown = 0;

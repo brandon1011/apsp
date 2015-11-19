@@ -62,8 +62,10 @@ print "Generating "+str(numGraphs)+" graphs with "+str(numVertices)+" vertices:"
 
 for i in range(numGraphs):
 	# TODO: Append num vertices in graph to beginning of file
-	print "\tGenerating graph "+str(i)+"/"+str(numGraphs)
+	print "\tGenerating graph "+str(i+1)+"/"+str(numGraphs)
 	name = namePrefix + "_" + str(i) + ".txt"
+
+	#num = random.randrange(numVertices, numVertices+9000)
 	generateGraph(numVertices, name)
 
 print "Done."

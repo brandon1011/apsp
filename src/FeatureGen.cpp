@@ -45,12 +45,13 @@ FeatureGen::get_edge_weights(void) {
 void 
 FeatureGen::get_graph_properties(void) {
 	int num_graphs = graphs.size();
-	int num_edges;
+	int num_edges,num_verts;
 	double accum, avg;
 
 	for (int i=0; i<num_graphs; i++) {
 		auto graph_ptr = graphs.at(i);
 		num_edges = graph_ptr->get_num_edges();
+		num_verts = graph_ptr->get_num_vertices();
 		accum = 0;
 
 		for (int j=0; j<num_edges; j++) {
@@ -61,6 +62,7 @@ FeatureGen::get_graph_properties(void) {
 		for (int j=0; j<num_edges; j++) {
 			avg_weight.push_back(avg);
 			this->num_edges.push_back(num_edges);
+			this->num_vertices.push_back(num_verts);
 		}
 	}
 }
@@ -132,5 +134,6 @@ FeatureGen::write_output(void) {
 			<< min_adj_edge.at(i) << "," 
 			/* Graph properties */
 			<< avg_weight.at(i) << "," << num_edges.at(i) << "\n";
+			//<< "," << num_vertices.at(i) <<"\n";
 	}
 }
