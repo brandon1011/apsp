@@ -11,7 +11,7 @@ DATA_DIR = '/home/brandon/apsp/data/'
 MODEL_LIB = '/home/brandon/apsp/models/'
 MODEL_NAME = 'RandomForestModel_v1'
 
-COST_THRESHOLD = 30
+COST_THRESHOLD = 25
 
 
 class RegressionModel(object):
