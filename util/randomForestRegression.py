@@ -17,15 +17,17 @@ COST_THRESHOLD = 30
 class RegressionModel(object):
 	def __init__(self):
 		self.model = None
+		self.default_training_set = DATA_DIR + 'training.csv'
 
-	def buildModel(self):
-		data = genfromtxt(DATA_DIR+'training.csv', delimiter=',')
+	def buildModel(self, training_file):
+		data = genfromtxt(training_file, delimiter=',')
 		labels = data[:,0]
 		samples = data[:,1:]
 
 		self.model = RandomForestRegressor(n_estimators=100)
 		self.model.fit(samples,labels)
 
+	def saveModel(self):
 		joblib.dump(self.model, MODEL_LIB+MODEL_NAME+'.pkl')
 
 	def loadModel(self):

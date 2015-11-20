@@ -70,7 +70,7 @@ TestBench::next(void) {
 	results.push_back(stats(avg, accum));
 	cout << "Num Edges in original graph=" << graph.get_num_edges() << endl;
 	cout << "Num_Edges in  reduced graph=" << alt_graph.get_num_edges() << endl;
-	cout << "Reduction=" << alt_graph.get_num_edges()*1.0/graph.get_num_edges() << endl;
+	cout << "Reduction=" << (1.0 - (alt_graph.get_num_edges()*1.0/graph.get_num_edges()) << endl;
 	cout << "Total difference=" << accum << endl;
 	cout << "\tcount=" << count << endl;
 	cout << "Average path difference=" << avg << endl;
