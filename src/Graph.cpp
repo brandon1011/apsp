@@ -132,3 +132,16 @@ Graph::min_edge_v(vertex_t v) {
 	}
 	return min;
 }
+
+double
+Graph::sum_edge_v(vertex_t v) {
+	auto vertex = get_vertex(v);
+	auto adj_list = vertex->get_adj();
+
+	double sum = 0;
+	for (auto e : adj_list) {
+		double cost = get_edge(e)->get_cost();
+		sum += cost;
+	}
+	return sum;
+}

@@ -14,4 +14,10 @@ This is an implementation of a Statistical Algorithm for the "All Pairs Shortest
 * Implement workflow for building training data
 * Infrastructure for predicting, building resulting subgraphs, then comparing results.
 
+### Candidate Features
+* Graph property: Average number of neighbors (Sum{v in V}(|adj(v)|))/|V|
+* Edge property: Sum of neighboring edge costs (for e=(u,v) Sum_{e in adj(u,v)}(cost(e)))
+* Edge property: Avg neighboring edge costs (prev/(|adj(u)| + |adj(v)|))
+
+
 

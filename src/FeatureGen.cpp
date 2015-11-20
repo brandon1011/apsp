@@ -121,6 +121,35 @@ FeatureGen::get_min_adj_edge(void) {
 		}
 	}
 }
+void
+FeatureGen::get_neighbor_properties(void) {
+	int num_graphs = graphs.size();
+	int num_edges;
+	double sum_cost_u, sum_cost_v, total_cost, avg_cost;
+	int adj_u, adj_v;
+
+	for (int i=0; i<num_graphs; i++) {
+		auto graph_ptr = graphs.at(i);
+		num_edges = graph_ptr->get_num_edges();
+
+		for (int j=0; j<num_edges; j++) {
+			auto edge = graph_ptr->get_edge(j);
+			vertex_t uid = edge->get_u();
+			vertex_t vid = edge->get_v();
+
+			adj_u = graph_ptr->get_vertex(uid)->get_adj().size();
+			adj_v = graph_ptr->get_vertex(vid)->get_adj().size();
+
+			sum_cost_u = graph_ptr->sum_edge_v(uid);
+			sum_cost_v = graph_ptr->sum_edge_v(vid);
+			total_cost = sum_cost_v + sum_cost_u;
+			avg_cost = total_cost/(adj_u+adj_v);
+
+			sum_neighbors.push_back(total_cost);
+			avg_neighbors.push_back(avg_cost);
+		}
+	}
+}
 void 
 FeatureGen::write_output(void) {
 	ofstream output(OUTPUT_DIR + outfile);
@@ -133,7 +162,9 @@ FeatureGen::write_output(void) {
 			<< max_connect.at(i) << "," << min_connect.at(i) << "," 
 			<< min_adj_edge.at(i) << "," 
 			/* Graph properties */
-			<< avg_weight.at(i) << "," << num_edges.at(i) << "\n";
+			<< avg_weight.at(i) << "," << num_edges.at(i) <<","//<< "\n";
 			//<< "," << num_vertices.at(i) <<"\n";
+
+			<< sum_neighbors.at(i) << "," << avg_neighbors.at(i) << "\n";
 	}
 }

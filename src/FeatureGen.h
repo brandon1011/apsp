@@ -22,6 +22,7 @@ private:
 	void get_graph_properties(void);
 	void get_vertex_connectivity(void);
 	void get_min_adj_edge(void);
+	void get_neighbor_properties(void);
 
 	vector<shared_ptr<Graph> >	graphs;
 	string	outfile;
@@ -31,6 +32,9 @@ private:
 	vector<double>	edge_weights;
 	vector<int>		max_connect;	/* Node with max connectivity per edge */
 	vector<int>		min_connect;	/* Node with min connectivity per edge */
+
+	vector<double>	sum_neighbors;	/* Sum of neighboring edge costs */
+	vector<double>	avg_neighbors;	/* Avg edge cost of neighbors */
 	/* Graph specific properties */
 	vector<int> 	num_vertices;	/* Num vertices in the graph */
 	vector<int>		num_edges;		/* Num edegs in the graph */
@@ -53,5 +57,6 @@ FeatureGen::compute_features(void) {
 	get_vertex_connectivity();
 	get_graph_properties();
 	get_min_adj_edge();
+	get_neighbor_properties();
 }
 #endif	// FEATURE_GEN_H
