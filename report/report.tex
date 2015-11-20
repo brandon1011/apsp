@@ -1,6 +1,8 @@
 \documentclass[journal]{IEEEtran}
 
 \usepackage{amsmath}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
 \begin{document}
 %
 % paper title
@@ -47,7 +49,7 @@ cost while producing a low cost solution.
 	Algorithms for solving APSP have long been studied in Graph Theory. The classical results from
 	Floyd \& Warshall
 	{\bf{[Ctations needed]}}
-	which has a time complexity $\Theta(|V|^3)$ is often a standard benchmarks for undirected, dense graphs.
+	which has a time complexity $\Theta(|V|^3)$ is often a standard benchmark for undirected, dense graphs.
 	Johnson's Algorithm
 	{\bf{[Ctations needed]}}
 	solves APSP faster than Floyd-Warshall on sparse graphs in $\Theta(|V|^2 \log|V|+ |E||V|)$ time,
@@ -55,7 +57,9 @@ cost while producing a low cost solution.
 	
 	More recent research forcuses on finding ``Approximate Algorithms" for APSP, which declares a
 	lower bound on solution quality. A {\it{t-approximate}} algorithm for APSP requires that
-	for all $u,v$, $\delta(u,v) \le \hat{\delta}(u,v) \le t\delta(u,v)$.
+	for all $u,v$, $\delta(u,v) \le \hat{\delta}(u,v) \le t\delta(u,v)$.\\
+	{\bf{To Do: More detail}}
+	
 \subsection{Our Contributions}
 	In this paper, we present a learning approach to graph pathfinding. Heuristic All Pairs Shortest Path (HAPSP)
 	finds approximate solutions to APSP on some graph $G$
@@ -78,11 +82,44 @@ using FW (exact APSP), the results of which are used to train the regression mod
 which accepts a new graph $G$ (the input to HAPSP), generates a feature set for $G$, using the predictions
 on the regression model to generate a subgraph $G'$, which is then solved using an exact APSP algorithm.
 
+\subsection{Overview}
+	The general workflow for the offline and online phases of HAPSP are described below:
+	%%%%%%%%%%%%%%%%%%%%%%%%% ALG %%%%%%%%%%%%%%%%%%%%
+	\begin{algorithm}
+	\caption{General HAPSP Workflow}
+	\begin{algorithmic}[1]
+	\State let $T\leftarrow$ importance threshold
+	\Procedure{GenerateModel}{}
+		\State Training set $S\leftarrow$ set auto-generated graphs
+		\State For each graph $G_i\in S$ build feature set $f_i$
+		\State Regression model $M = $ TRAIN($f_1,...f_n$)
+		\State\Return $M$
+	\EndProcedure
+	\Procedure{BuildSubgraph}{model $M$, $G$=$E,V$}
+		\State Initialize $(E',V')$ where $V'=V$ and $E' = \emptyset$
+		\State Build feature set $f$ from $G$
+		\State Predictions $y = M$.predict($f$)
+		\For{each edge $e$ in $E$}
+			\If{$y_e>T$}
+				\State $E'=E'\cup \{e\}$
+			\EndIf
+		\EndFor
+		\State\Return $(E',V')$
+	\EndProcedure
+	\Procedure{HAPSP}{graph $G$}
+		\State $M\leftarrow$\Call{GenerateModel}{}
+		\State $G'\leftarrow$\Call{BuildSubgraph}{$M,G$}
+		\State Solve exact APSP on $G'$
+	\EndProcedure
+	\end{algorithmic}
+	\label{fig:alg_offline}
+	\end{algorithm}
+
 \subsection{Feature Selection}
 	A prediction for a particular edge $e\in E$ in a graph $G=(E,V)$ 
 	is an approximation for the number of shortest paths 
 	that $e$ occurs in between all pairs of vertices $u,v\in V$ for the solution of APSP on $G$, denoted as 
-	COUNT($e$). $G'$ is constructed from edges $e\in E$ where COUNT$(e)<T$ for some threshold $T$. 
+	COUNT($e$). $G'$ is constructed from edges $e\in E$ where COUNT$(e)>T$ for some threshold $T$. 
 	The features used to characterize each edge in $G$ are the following:
 	\begin{itemize}
 		\item {\bf{Edge weight}}: $w_e$ for each edge $e\in E$. This takes time $\Theta(|E|)$ total time.
@@ -97,4 +134,9 @@ on the regression model to generate a subgraph $G'$, which is then solved using 
 		\item{\bf{Number of edges}}: $|E|$, which is $\Theta(1)$.
 	\end{itemize}
 	Therefore, the cost of the on-line feature generation step is $\Theta(|E|\log|E|)$.
+	
+\subsection{Regression Model}
+	{\bf{To Do: Info about Random Forest}}
+	
+\section{Experimental Results}
 \end{document}
