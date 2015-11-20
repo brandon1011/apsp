@@ -1,0 +1,100 @@
+\documentclass[journal]{IEEEtran}
+
+\usepackage{amsmath}
+\begin{document}
+%
+% paper title
+% can use linebreaks \\ within to get better formatting as desired
+\title{Graph Learning Heuristic for All Pairs Shortest Path}
+\author{Brandon Wu, Miodrag Potkonjak}
+\maketitle
+
+\begin{abstract}
+For an weighted, undirected graph $G = (E,V)$, let distance $\hat{\delta}(u,v)$ be an approximation of the actual
+shortest path distance $\delta(u,v)$ between vertices $u$ and $v$, $\forall u,v\in V$. Reasonably good
+approximations of the all pairs shortest path (APSP) problem that can be performed with 
+real-time performance constraints are valuable in practical route planning applications.\\
+
+In this paper, we present a simple learning framework, using Random Forest Regression, to prune dense graphs
+in order to reduce the time and space complexities of computing distance queries between any two vertices in
+the graph. Using this scheme, we show that [FILL-IN] of edgegs can be pruned while only increasing the average
+path cost by [FILL-IN].
+\end{abstract}
+
+\section{Introduction}
+In graph theory, the class of ``Shortest path" problems, i.e. find a path between any two vertices $u,v$ such
+that the sum of the edge weights along this path is minmized are well understood. The variant ``All pairs
+shortest path" (APSP) has a polynomial time solution in the Floyd-Warshall Algorithm. Variant flavors on this
+algorithm have been proposed in 
+{\bf{[Citations needed]}}
+to reduce the run-time by approximating shortest paths. \\
+
+There is much interest today in finding ``approximate" solutions to APSP. For instance, in mapping or route-planning
+software, responsivity is often more important to user-experience than optimality. For these applications, it would
+be useful to generate a lookup table to answer queries that specify a origin and destination and return a
+low cost path between them. In this paper, we study methods for simplifying graph search on APSP by introducing
+a heuristic to generate a sparse subgraph $G'$ of the original graph $G$ that significantly reduces run-time
+cost while producing a low cost solution.
+
+\subsection{Problem Formulation}
+	A weighted, undirected graph is a graph $G=(E,V)$ where each edge $e=(u,v)\in E$ has an associated weight
+	$w_e$. A path $p_{u,v}$ between vertices $(u,v)\in V$ is a set of edges that connects $u$ and $v$. The cost
+	of the path is the sum of the edge weights, $cost(p) = \sum_{e\in p}w_e$. APSP returns distances $\delta$
+	for all pairs of vertices $u,v$ such that $\delta(u,v) = min_{p\in P} (cost(p))$ where $P$ is the set of
+	all valid paths between $u$ and $v$.
+
+\subsection{Related Work}
+	Algorithms for solving APSP have long been studied in Graph Theory. The classical results from
+	Floyd \& Warshall
+	{\bf{[Ctations needed]}}
+	which has a time complexity $\Theta(|V|^3)$ is often a standard benchmarks for undirected, dense graphs.
+	Johnson's Algorithm
+	{\bf{[Ctations needed]}}
+	solves APSP faster than Floyd-Warshall on sparse graphs in $\Theta(|V|^2 \log|V|+ |E||V|)$ time,
+	using Dijkstra's algorithm for single source shortest pasth as a subroutine. \\
+	
+	More recent research forcuses on finding ``Approximate Algorithms" for APSP, which declares a
+	lower bound on solution quality. A {\it{t-approximate}} algorithm for APSP requires that
+	for all $u,v$, $\delta(u,v) \le \hat{\delta}(u,v) \le t\delta(u,v)$.
+\subsection{Our Contributions}
+	In this paper, we present a learning approach to graph pathfinding. Heuristic All Pairs Shortest Path (HAPSP)
+	finds approximate solutions to APSP on some graph $G$
+	using Random Forest regression to predict a useful subgraph $G'$ such that the cost of running an exact
+	APSP algorithm on $G'$ is significantly lower than on $G$, while preserving stronger solution quality
+	than a {\it{t-approximate}} algorithm.
+
+\section{Heuristic Generation}
+The goal of the heuristic is to characterize a graph in such a way to accurately predict
+the importance of a particular edge. The importance of an edge is defined in this paper to be the frequency of
+its occurences in a shortest path. An edge should be characterized in such a way that is general enough
+that it ignores the global topology of the graph it resides in but specific enough to capture its local
+importance. By selecting features specific to an edge and those apply to an entire graph, it is possible to
+generate a simple linear regression model using standard machine learning techniques to predict
+the relative importance of each edge. A subgraph is then constructed by applying a threshold to the importance
+prediction on which an optimal algorithm, such as Floyd-Warshall (FW) solves APSP.\\
+
+Our system performs APSP in two phases: (1) an offline phase takes several graph instances and solves them
+using FW (exact APSP), the results of which are used to train the regression model, and (2) an online phase
+which accepts a new graph $G$ (the input to HAPSP), generates a feature set for $G$, using the predictions
+on the regression model to generate a subgraph $G'$, which is then solved using an exact APSP algorithm.
+
+\subsection{Feature Selection}
+	A prediction for a particular edge $e\in E$ in a graph $G=(E,V)$ 
+	is an approximation for the number of shortest paths 
+	that $e$ occurs in between all pairs of vertices $u,v\in V$ for the solution of APSP on $G$, denoted as 
+	COUNT($e$). $G'$ is constructed from edges $e\in E$ where COUNT$(e)<T$ for some threshold $T$. 
+	The features used to characterize each edge in $G$ are the following:
+	\begin{itemize}
+		\item {\bf{Edge weight}}: $w_e$ for each edge $e\in E$. This takes time $\Theta(|E|)$ total time.
+		\item{\bf{Max connectivity (MC)}}: for each edge $e=(u,v)$, MC$(e)$=max($|$adj($u)|,|$adj($v)|$).
+			Assuming each vertex $v$ has access to adj($v$) in $\Theta(1)$, this step is $\Theta(|E|)$.
+		\item{\bf{Min connectivity}}: symmetric to max connectivity, $\Theta(|E|)$. 
+		\item{\bf{Min cost neighbor (MCN)}}: MCN($e$=$(u,v)$) = min($w_{e'}$) for all $e'\in$ adj($u),\cup$
+			adj($v$). By pre-sorting $E$ ($\Theta(|E|\log|E|)$), lookups of min cost edge for each $v\in V$
+			can be done in $\Theta(1)$, so this step is $\Theta(|E|\log|E|)$.
+		\item{\bf{Average edge weight (AVG$_w$)}}: for a graph $G$, AVG$_w = \frac{1}{|E|}\sum_{e}w_e$.
+			The cost is $\Theta(|E|)$.
+		\item{\bf{Number of edges}}: $|E|$, which is $\Theta(1)$.
+	\end{itemize}
+	Therefore, the cost of the on-line feature generation step is $\Theta(|E|\log|E|)$.
+\end{document}
