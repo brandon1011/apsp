@@ -139,4 +139,31 @@ on the regression model to generate a subgraph $G'$, which is then solved using 
 	{\bf{To Do: Info about Random Forest}}
 	
 \section{Experimental Results}
+	In this section, we outline the workflow for comparing the performance of HAPSP with the
+	standard optimal algorithms. In the first section, we outline the data generation process
+	for the graphs used in training the model and testing. Next, we briefly discuss the quality
+	of the regression model.
+	
+	Then we discuss our experimental methods and display our results. This section is followed by
+	a summary of the results and discussion.
+	\subsection{Graph Generation}
+		Throughout the experiment, we use the Random Geometric Graph (RGG) technique for auto-generating graphs.
+		{\bf{[Citations needed]}}
+		The Random Geometric graph is a simple spatial model heavily used in graph theory for its simplicity
+		but also geometric properties. An RGG is constructed by taking $N$ vertices and placing them
+		uniformly at random in a $k$-dimensional unit space (e.g. if $k=3$ these vertices would exist in
+		the unit cube $x_i,y_i,z_i = U(0,1),U(0,1),U(0,1)$ where $U(*)$ is a function that returns a uniform
+		distribution on its input argument.\\
+		
+		A threshold value $T$ is chosen in the range $(0,\sqrt{k})$. For each pair of vertices $(u,v)$ in
+		the graph $G$, an edge exists between $u$ and $v$ if the Euclidean distance between them is less
+		than $T$. The weight of the edge is the Euclidean distance. Therefore, the a small $T$ produces a
+		graph that is more sparse than a larger one. In this report, we have empircally chose $T=0.4$
+		since we want a strong guarantee that the graph is connected, but also want $|E| << |V|^2$ to
+		avoid a trivial solution.\\
+		
+		The number of vertices is uniformly selected at random in the domain (1000,1200), chosen empirically
+		based on the hardware limitations of the experiment machines.
+		
+	\subsection{Random Forest Regression Model}
 \end{document}

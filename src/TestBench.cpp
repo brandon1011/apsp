@@ -121,7 +121,7 @@ TestBench::compute_bin(double percent_err) {
 	int bindex;		/* Bin index */
 	percent_err *= (100/BIN_GRANULARITY);
 
-	if (percent_err < 0.05) /* percent error < 0.25% is negligible */
+	if (percent_err < 0.005) /* percent error < 0.025% is negligible */
 		return 0;
 	bindex = (int) ceil(percent_err);
 	return (bindex >= BIN_COUNT) ? BIN_COUNT-1 : bindex;
