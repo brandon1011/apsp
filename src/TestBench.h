@@ -4,6 +4,9 @@
 #define GRAPH_DIR "../graphs/"
 #define SUBGRAPH_DIR "../graphs/subgraphs/"
 
+#define BIN_COUNT	41
+#define BIN_GRANULARITY 0.5
+
 #include "Graph.h"
 #include "FloydWarshall.h"
 #include "Kruskall.h"
@@ -16,17 +19,15 @@ public:
 	TestBench(string prefix, int num_tests);
 	bool	has_next(void);
 	void	next(void);		/* Run the next test */
+	void	print_results(void);
 private:
-	struct stats{
-		double avg;
-		double diff;
-		stats(double a, double d): avg(a), diff(d) {}
-	};
-	vector<stats>	results;
-
 	string 	prefix;
 	int		num_tests;
 	int 	current;	/* Test iterator */
+	int		error_bins[BIN_COUNT];
+	int		num_cmps;	/* Total num comparisons */
+
+	int		compute_bin(double percent_err);
 };
 
 inline bool

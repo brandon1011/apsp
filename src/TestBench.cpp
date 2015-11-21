@@ -2,15 +2,24 @@
 #include <limits>
 #include <string>
 #include <iostream>
+#include <cmath>
 
 #define INFINITY std::numeric_limits<double>::max()
 
 TestBench::TestBench(string prefix, int num_tests): 
-	prefix(prefix), num_tests(num_tests), current(0) {}
+	prefix(prefix), num_tests(num_tests), current(0),num_cmps(0) {
+
+	for (int i=0; i<BIN_COUNT; i++)
+		error_bins[i] = 0;
+
+	cout << "num_edges_before,num_edges_after,"
+		<< "percent_edge_reduction,avg_soln_error,"
+		<< "max_percent_error,avg_percent_error\n";
+}
 
 void
 TestBench::next(void) {
-	cout << "Starting test " << current << endl;
+	cerr << "Starting test " << current << endl;
 	string filename(GRAPH_DIR + prefix + "_" + to_string(current) + ".txt");
 	Graph graph(filename);
 
@@ -28,20 +37,20 @@ TestBench::next(void) {
 	//FloydWarshall alg(mst);
 	FloydWarshall alg(alt_graph);
 
-	double 	accum = 0;
-	double 	accum_percent_slowdown = 0;
-	double	avg;
-	double	avg_percent_slowdown;
+	double 	accum=0.0, max_error=0.0, accum_percent_slowdown=0.0;
+	double	avg,avg_percent_slowdown,reduction,percent_err;
 	int 	count = 0;
 
-	for (int i=0; i<num_vertices; i++)
+	/*for (int i=0; i<num_vertices; i++)
 		cerr << "(0," << i << ") " << alg.lookup(0,i) << "\t" << opt.lookup(0,i) <<  endl;
-
+	*/
 	vector<double> slowdown;
 
 	double diff, t0, t1;
 	for (int i=0; i<num_vertices; i++) {
 		for (int j=i; j<num_vertices; j++) {
+			num_cmps++;
+
 			t1 = alg.lookup(i,j);
 			t0 = opt.lookup(i,j);
 
@@ -60,20 +69,60 @@ TestBench::next(void) {
 			diff = t1-t0;
 			accum += diff;
 
-			if (t0) accum_percent_slowdown += (diff/t0);
-
+			percent_err = 0;
+			if (t0) {
+				percent_err = diff/t0;
+				accum_percent_slowdown += (diff/t0);
+				max_error = (percent_err > max_error) ? percent_err: max_error;
+			}
+			error_bins[compute_bin(percent_err)] += 1;
 		}
 	}
 	avg = accum/(1.0*count);
 	avg_percent_slowdown = accum_percent_slowdown/(1.0*count);
+	reduction = 1.0 - (alt_graph.get_num_edges()*1.0/graph.get_num_edges());
 
-	results.push_back(stats(avg, accum));
+	/*
 	cout << "Num Edges in original graph=" << graph.get_num_edges() << endl;
 	cout << "Num_Edges in  reduced graph=" << alt_graph.get_num_edges() << endl;
-	double reduction = 1.0 - (alt_graph.get_num_edges()*1.0/graph.get_num_edges());
 	cout << "Reduction=" << reduction << endl;
 	cout << "Total difference=" << accum << endl;
 	cout << "\tcount=" << count << endl;
 	cout << "Average path difference=" << avg << endl;
 	cout << "Average percent cost increase=" << avg_percent_slowdown << "\n\n";
+	*/
+
+	cout << graph.get_num_edges() << "," << alt_graph.get_num_edges() << ","
+		<< reduction << "," << avg << "," << max_error << "," << avg_percent_slowdown
+		<< endl;
+
+}
+
+void
+TestBench::print_results(void) {
+	double freq;
+	cout << "Results..." << endl;
+	for (int i=0; i<BIN_COUNT;i++)	/* Header */
+		cout << BIN_GRANULARITY*i <<",";
+	cout << endl;
+
+	for (int i=0; i<BIN_COUNT;i++)	/* Number */
+		cout << error_bins[i] << ",";
+	cout << endl;
+
+	for (int i=0; i<BIN_COUNT; i++) { /* Frequency*/
+		freq = 1.0*error_bins[i]/num_cmps;
+		cout << freq << ",";
+	}
+}
+
+int
+TestBench::compute_bin(double percent_err) {
+	int bindex;		/* Bin index */
+	percent_err *= (100/BIN_GRANULARITY);
+
+	if (percent_err < 0.05) /* percent error < 0.25% is negligible */
+		return 0;
+	bindex = (int) ceil(percent_err);
+	return (bindex >= BIN_COUNT) ? BIN_COUNT-1 : bindex;
 }

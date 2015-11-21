@@ -40,5 +40,6 @@ compare_results(string prefix, int num_graphs) {
 	for (int i=0; i<num_graphs; i++) {
 		tb.next();
 	}
+	tb.print_results();
 }
 #endif // UTIL_H

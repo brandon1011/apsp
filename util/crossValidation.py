@@ -7,10 +7,10 @@ from randomForestRegression import *
 CV_DIR = '/home/brandon/apsp/data/cross_validation/'
 
 def crossValidation(prefix, folds):
-	print "SS_total,\tSS_reg\t,SS_res\tR^2\tNorm_Residual"
+	print "SS_total,SS_reg,SS_res,R^2,Norm_Residual,Error_Avg,Percent_Error_Avg"
 
 	for i in range(folds):
-		print 'Beginning Fold ' + str(i)
+		#print 'Beginning Fold ' + str(i)
 		training_file = CV_DIR + prefix + '_train' + str(i) + '.csv'
 		testing_data = genfromtxt(CV_DIR + prefix + '_test' + str(i) + '.csv',delimiter=',')
 		test_x = testing_data[:,1:]
@@ -36,7 +36,11 @@ def crossValidation(prefix, folds):
 		r_squared = 1.0 - (ss_res/ss_total)
 		norm_residual = sqrt(ss_res)
 
-		res = str(ss_total)+','+str(ss_reg)+','+str(ss_res)+','+str(ss_res)+','+str(r_squared)+','+str(norm_residual)
+		percent_diff = np.divide(np.absolute(diff),test_y)
+		avg_diff = reduce(lambda x,y:x+y,np.absolute(diff))/(diff.shape[0])
+		avg_percent_diff = reduce(lambda x,y:x+y,percent_diff)/(diff.shape[0])
+
+		res = str(ss_total)+','+str(ss_reg)+','+str(ss_res)+','+str(ss_res)+','+str(r_squared)+','+str(norm_residual)+','+str(avg_diff)+','+str(avg_percent_diff)
 		print res
 
 
