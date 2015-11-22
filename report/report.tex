@@ -21,8 +21,8 @@ real-time performance constraints are valuable in practical route planning appli
 
 In this paper, we present a simple learning framework, using Random Forest Regression, to prune dense graphs
 in order to reduce the time and space complexities of computing distance queries between any two vertices in
-the graph. Using this scheme, we show that [FILL-IN] of edgegs can be pruned while only increasing the average
-path cost by [FILL-IN].\\
+the graph. Using this scheme, we show that 50\% of edgegs can be pruned while only increasing the average
+path cost by 10\%.\\
 
 In general, we introduce a scheme for efficiently compressing graphs while maintaining properties of interest.
 \end{abstract}
@@ -30,9 +30,9 @@ In general, we introduce a scheme for efficiently compressing graphs while maint
 \section{Introduction}
 In graph theory, the class of ``Shortest path" problems, i.e. find a path between any two vertices $u,v$ such
 that the sum of the edge weights along this path is minmized are well understood. The variant ``All pairs
-shortest path" (APSP) has a polynomial time solution in the Floyd-Warshall Algorithm. Variant flavors on this
-algorithm have been proposed in 
-{\bf{[Citations needed]}}
+shortest path" (APSP) has a polynomial time solution in the Floyd-Warshall Algorithm.
+Variant flavors on this algorithm have been proposed in 
+\cite{approx1},\cite{approx2},\cite{neuralNet},\cite{astar}
 to reduce the run-time by approximating shortest paths. \\
 
 There is much interest today in finding ``approximate" solutions to APSP. For instance, in mapping or route-planning
@@ -51,18 +51,17 @@ cost while producing a low cost solution.
 
 \subsection{Related Work}
 	Algorithms for solving APSP have long been studied in Graph Theory. The classical results from
-	Floyd \& Warshall
-	{\bf{[Ctations needed]}}
+	Floyd \& Warshall \cite{floydWarshall}
 	which has a time complexity $\Theta(|V|^3)$ is often a standard benchmark for undirected, dense graphs.
 	Johnson's Algorithm
-	{\bf{[Ctations needed]}}
+	\cite{johnson}
 	solves APSP faster than Floyd-Warshall on sparse graphs in $\Theta(|V|^2 \log|V|+ |E||V|)$ time,
 	using Dijkstra's algorithm for single source shortest pasth as a subroutine. \\
 	
 	More recent research forcuses on finding ``Approximate Algorithms" for APSP, which declares a
 	lower bound on solution quality. A {\it{t-approximate}} algorithm for APSP requires that
 	for all $u,v$, $\delta(u,v) \le \hat{\delta}(u,v) \le t\delta(u,v)$.
-	{\bf{[Ctations needed]}} \\
+	\cite{approx1},\cite{approx2},\cite{neuralNet}.
 	
 	Our approach is orthogonal to that of approximate algorithms: we wish to introduce an algorithm
 	that is statiscally close to the exact algorithm, i,e,. $\forall\,u,v \in G,\, 
@@ -196,8 +195,8 @@ on the regression model to generate a subgraph $G'$, which is then solved using 
 	Then we discuss our experimental methods and display our results. This section is followed by
 	a summary of the results and discussion.
 	\subsection{Graph Generation}
-		Throughout the experiment, we use the Random Geometric Graph (RGG) technique for auto-generating graphs.
-		{\bf{[Citations needed]}}
+		Throughout the experiment, we use the Random Geometric Graph (RGG) technique for auto-generating graphs
+		\cite{randGeom},\cite{randGeom2}.
 		The Random Geometric graph is a simple spatial model heavily used in graph theory for its simplicity
 		but also geometric properties. An RGG is constructed by taking $N$ vertices and placing them
 		uniformly at random in a $k$-dimensional unit space (e.g. if $k=3$ these vertices would exist in
@@ -230,7 +229,7 @@ on the regression model to generate a subgraph $G'$, which is then solved using 
 	\subsection{Random Forest Regression Model}
 		Our methods for measuring the quality of the random forest regression fit was performed independently
 		of the performance benchmarks for our algorithm. We use the popular Python library {\it{scikit-learn}}
-		{\bf{[Citations needed]}}
+		\cite{scikit}
 		for generating our Random Forest regression model. We generate the model using 100 trees. The quality
 		of the fit is measured by computing the $R^2$ value of the regression:
 			\[R^2 = 1 - \frac{SS_{res}}{SS_{total}}\]
@@ -383,6 +382,11 @@ on the regression model to generate a subgraph $G'$, which is then solved using 
 		of errors follows a decaying exponential, such that intolerable errors are very low probability
 		events.\\
 		
+		Therefore, the graph compression techniques we introduce may be useful in real-time
+		applications, where low-probability outliers can be discarded, since it effectively
+		generates subgraphs which are often nearly optimal, but also much cheaper in terms
+		of run-time cost of graph search algorithms on these subgraphs. \\
+		
 		However, our methods fail to demonstrate the ability of HAPSP to compress a graph 
 		significantly: the performance of our heuristic sharply declines if we prune more aggressively.
 		By reducing the size of the graph by 50$\%$, the subgraph we generate is still not a ``sparse"
@@ -396,5 +400,79 @@ on the regression model to generate a subgraph $G'$, which is then solved using 
 		particular interest in the original graph. In the case of HAPSP, we retain distances between
 		arbitarily vertices, with a high degree of fidelity. Graph compression frameworks may be
 		useful to other families of problems in graph theory.
-	\subsection{Future Work}
+	\subsection{Improvements \& Future Work}
+		There is much room for improvement within the HAPSP framework. Increasing the accuracy of the
+		regression model would allow graphs to be pruned more aggressively, since it would more
+		accurately identify edges that contribute in shortest paths. The challenge is to determine
+		important edge features that are efficiently computable. Additionally, it is possible to
+		find a more valuable heuristic than the number of occurences in a shortest path, since
+		the number of occurence in the shortest path do not quantify the contribution of that edge
+		to that path, and whether that path would have suitable alternate choices, should the edge
+		be deleted. Similarly, this heuristic fails to account for the dependence of edges on
+		other edges. One edge $e$, might contribute to many shortest paths in $G$ due to some
+		other edge $e'$, but $e$ might be useless in the graph $G\setminus e'$. These nuances
+		are difficult to capture with standard machine learning techniques and might fundamentally
+		limit the effectiveness of learning based graph pruning. \\
+		
+		Another major shortcoming of the results of this paper is that there is no work performed
+		on different families of graphs. It may be the case that the Regression model was only
+		successful on Random Geometric Graphs, and would perform poorly on different classes of graphs,
+		for example
+		on graphs where edges are generated on a uniform distribution. More importantly,
+		we did not attempt to solve real-world graphs, such as graphs modelling road maps.
+		
+\section{Acknowledgements}
+	Special thanks to Miodrag Potkonjak for his extensive involvement and helpful discussions
+	on this project. For more detailed information about the implementation, please
+	refer to the code repository on Github: https://github.com/brandon1011/apsp. 
+	\begin{thebibliography} {2} \normalsize
+	
+		 \bibitem{approx2} Baswana, and S. Kavitha, T.
+         Faster Algorithms for All-Pairs Approximate Shortest Path in Undirected Graphs.
+         Society for Industrial and Applied Mathematics,2010.39:7.p.2865-2896.
+         
+		\bibitem{randGeom2} Dall, J. and Christensen, M.
+		Random Geometric Graphs.
+		Physical Review E 66 (2002).
+	
+		\bibitem{astar} Goldberg, A. and Harrelson, C.
+		Computing Shortest Path: A* Search Meets Graph Theory.
+		Society for Industrial and Applied Mathematics, 2005.
+		p.156-165.
+		
+		\bibitem{johnson}
+		Johnson, Donald B.
+		Efficient algorithms for shortest paths in sparse networks.
+		Journal of the ACM 24 (1),1977:p.1–13.
+		
+		\bibitem{floydWarshall}
+		Ingerman, Peter Z.
+		Algorithm 141: Path Matrix. 
+		Communications of the ACM 5 (11),1962.
+		p.556.
+
+		\bibitem{approx1} Kanai, T. and Suzuki, H.
+		Approximate shortest path on a polyhedral surface and its applications.
+		Computer-Aided Design 33 (2001).p.801-811.
+		
+		\bibitem{randGeom} Muthukrishnan, S. and Pandurangan G.
+		The Bin-Covering Technique for Thresholding Random Geometric Graph Properties.
+		Society for Industrial and Applied Mathematics, 2005.
+		p.989-998.
+		 
+		\bibitem{scikit} Pedregosa, F. and Varoquaux, G. and Gramfort, A. and Michel, V.
+         and Thirion, B. and Grisel, O. and Blondel, M. and Prettenhofer, P.
+         and Weiss, R. and Dubourg, V. and Vanderplas, J. and Passos, A. and
+         Cournapeau, D. and Brucher, M. and Perrot, M. and Duchesnay, E.
+         Scikit-learn: Machine Learning in Python.
+         Journal of Machine Learning Research, 2011.12.p.2825-2830.
+ 
+         
+         \bibitem{neuralNet} Wang, X. and Qu, H. and Yi, Z.
+         A modified pulse coupled neural network for shortest-path problem.
+         Neurocomputing 72 (2009).
+         p.3028-3033.
+         
+
+	\end{thebibliography}
 \end{document}
