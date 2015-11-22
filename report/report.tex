@@ -36,11 +36,17 @@ Variant flavors on this algorithm have been proposed in
 to reduce the run-time by approximating shortest paths. \\
 
 There is much interest today in finding ``approximate" solutions to APSP. For instance, in mapping or route-planning
-software, responsivity is often more important to user-experience than optimality. For these applications, it would
+software, responsivity is often more important to user-experience than optimality. For example,
+a practial variant to APSP may be specified in the following way: return a {\it{good}}, low-cost
+solution to APSP within a fixed period of time. What constitutes a solution as {\it{good}}
+may vary depending on the application, or the responsivity requirements of the user, but a typical
+definition is one that is nearly optimal with high probability.\\
+
+ For these applications, it would
 be useful to generate a lookup table to answer queries that specify a origin and destination and return a
 low cost path between them. In this paper, we study methods for simplifying graph search on APSP by introducing
 a heuristic to generate a sparse subgraph $G'$ of the original graph $G$ that significantly reduces run-time
-cost while producing a low cost solution.
+cost while maintaining a high solution quality.
 
 \subsection{Problem Formulation}
 	A weighted, undirected graph is a graph $G=(E,V)$ where each edge $e=(u,v)\in E$ has an associated weight
@@ -61,15 +67,17 @@ cost while producing a low cost solution.
 	More recent research forcuses on finding ``Approximate Algorithms" for APSP, which declares a
 	lower bound on solution quality. A {\it{t-approximate}} algorithm for APSP requires that
 	for all $u,v$, $\delta(u,v) \le \hat{\delta}(u,v) \le t\delta(u,v)$.
-	\cite{approx1},\cite{approx2},\cite{neuralNet}.
+	\cite{approx1},\cite{approx2},\cite{neuralNet}. \\
 	
 	Our approach is orthogonal to that of approximate algorithms: we wish to introduce an algorithm
 	that is statiscally close to the exact algorithm, i,e,. $\forall\,u,v \in G,\, 
 	\delta(u,v) \le \hat{\delta}(u,v) = p\cdot\delta(u,v)$, where $p$ follows some probability
-	distribution such that $\lim_{p\rightarrow\infty}Pr(p) = 0$.
+	distribution such that $\lim_{p\rightarrow\infty}Pr(p) = 0$ and that the probability density function
+	of $p$ decays quickly.
 	
 \subsection{Our Contributions}
-	In this paper, we present a learning approach to graph pathfinding. Heuristic All Pairs Shortest Path (HAPSP)
+	In this paper, we present a learning approach to graph pathfinding. 
+	Heuristic All Pairs Shortest Path (HAPSP)
 	finds approximate solutions to APSP on some graph $G$
 	using Random Forest regression to predict a useful subgraph $G'$ such that the cost of running an exact
 	APSP algorithm on $G'$ is significantly lower than on $G$, while preserving stronger solution quality
@@ -93,6 +101,16 @@ Our system performs APSP in two phases: (1) an offline phase takes several graph
 using FW (exact APSP), the results of which are used to train the regression model, and (2) an online phase
 which accepts a new graph $G$ (the input to HAPSP), generates a feature set for $G$, using the predictions
 on the regression model to generate a subgraph $G'$, which is then solved using an exact APSP algorithm.
+
+\subsection{Terminology}
+	\begin{itemize}
+		\item A {\it{query}} is an $\Theta(1)$ lookup into an $|V|\times|V|$ table computed by
+		the APSP algorithm that returns the minimum cost path $p_{u,v}$ between two 
+		vertices $u,\,v\,\in\,V$.
+		\item The {\it{error}} of a path $p_{u,v}$ is the absolute difference 
+		between the cost of the path returned by HAPSP, $\hat{p}_{u,v}$ and the cost of the optimal
+		path $p_{u,v}$. 
+	\end{itemize}
 
 \subsection{Heuristic Edge Pruning Overview}
 	The general workflow for the offline and online phases of HAPSP are described below:
@@ -119,7 +137,7 @@ on the regression model to generate a subgraph $G'$, which is then solved using 
 		\State\Return $(E',V')$
 	\EndProcedure
 	\Procedure{HAPSP}{graph $G$}
-		\State $M\leftarrow$\Call{GenerateModel}{}
+		\State $M\leftarrow$\Call{LoadModel}{}
 		\State $G'\leftarrow$\Call{BuildSubgraph}{$M,G$}
 		\State Solve exact APSP on $G'$
 	\EndProcedure
@@ -148,7 +166,27 @@ on the regression model to generate a subgraph $G'$, which is then solved using 
 	Therefore, the cost of the on-line feature generation step is $\Theta(|E|\log|E|)$.
 	
 \subsection{Regression Model}
-	{\bf{To Do: Info about Random Forest}}
+	Random Forest is an ensemble learning method that uses random decision forests\cite{randForest}. 
+	A decision tree
+	is a learning technique used in classification problems (where the prediction domain is a finite
+	set of states, or {\it{classes}}). The leaves of the tree correspond to the target values output
+	by the prediction, and the interior nodes represent a decision based on the value of the input,
+	for example, $age\,\ge 35$ would be a test decided by some input variable $age$. \\
+	
+	Ensemble
+	techqniues generalize decision trees to increase the expressivity of the functions they can
+	model; several different techniques are used to construct decision trees that assert
+	varying hypotheses, the aggregation of these hypotheses can yield a hypothesis that expresses
+	more complex models. \\
+	
+	{\it{Random Forest}} regression uses a technique called {\it{bootstrap aggregating}}, in
+	which samples are randomy drawn with replacement to form the training set for each tree.
+	This technique, referred to as {\it{bagging}} reduces over-fitting. A prediction from
+	some input vector $\bar{x} = \{x_1,x_2,..,x_n\}$ is evaluated by averaging the
+	predictions from each of the $N$ trees in the forest, $\hat{f}_i,\,i\in (1,...,N)$:
+		\[f(\bar{x}) = \frac{1}{N} \sum_{i=1}^N\hat{f}_i(\bar{x})\]
+	
+	In our Random Forest model, we use $N=100$. 
 
 \subsection{Shortest Path Algorithm}
 	Exact algorithms for APSP are used in HAPSP in two places: (1) to generate labels on the training
@@ -215,8 +253,8 @@ on the regression model to generate a subgraph $G'$, which is then solved using 
 		
 	\subsection{Feature Generation}
 		Generating a feature set is required on all graphs for HAPSP. We construct our model with the 6
-		features described in section {\it{II.B}}. Generation of these features is straight-forward from
-		their description (see {\it{II.B}}). \\
+		features described in section {\it{II.C}}. Generation of these features is straight-forward from
+		their description (see {\it{II.C}}). \\
 		
 		For the training set and cross validation data, it is also necessary to generate the data labels.
 		That is, to ``count" the actual number of occurences of each edge $e \in E$ in a shortest path.
@@ -306,7 +344,6 @@ on the regression model to generate a subgraph $G'$, which is then solved using 
 		We performed our tests on Intel i7 hardware. 
 		
 	\subsection{Main Results}
-		
 		We perform 100 test instances with new randomly generated graphs. For each instance, we
 		compute the optimal APSP. Then, we generate a feature set for the graph and prune the graph
 		according the the SUBGRAPH procedure in Algorithm \ref{fig:alg}. Finally, we again compute
@@ -336,6 +373,12 @@ on the regression model to generate a subgraph $G'$, which is then solved using 
 		$R_{\mbox{avg}}$, the average graph compression ratio across all test instances was 50\%, while
 		the average solution cost suffered an increase of 9.73\%. More aggressive edge pruning led to
 		a steep increase in the average percent error. \\
+				
+		\begin{figure*}[] \centering
+		\includegraphics[width=6in]{../plots/errorplot_1.png} 
+		\caption{Solution quality of HAPSP vs APSP}
+		\label{fig:error_plt}
+		\end{figure*}
 		
 		Another important metric is the maximum percent error, which quantifies the worst case scenario
 		for distance queries to HAPSP. The average maximum percent error was computed by computing the
@@ -353,12 +396,6 @@ on the regression model to generate a subgraph $G'$, which is then solved using 
 		
 		However, if distance queries of this type are low probability events, practical systems can
 		still find utility in our HAPSP scheme. \\
-		
-		\begin{figure*}[] \centering
-		\includegraphics[width=5in]{../plots/errorplot_1.png} 
-		\caption{Solution quality of HAPSP vs APSP}
-		\label{fig:error_plt}
-		\end{figure*}
 		
 		Fig \ref{fig:error_plt} summarizes the frequency of percent error across all test instances. 
 		For each distance test ($\forall\, u,v\in V,\,\mbox{error} = \hat{\delta}(u,v) - \delta(u,v)$),
@@ -382,6 +419,13 @@ on the regression model to generate a subgraph $G'$, which is then solved using 
 		of errors follows a decaying exponential, such that intolerable errors are very low probability
 		events.\\
 		
+		\begin{figure*}[] \centering
+		\includegraphics[width=6in]{../plots/threshold_sweep.png} 
+		\caption{Solution Quality degrades as the Graph Compression Increases}
+		\label{fig:thresh_plt}
+		\end{figure*}
+		
+		
 		Therefore, the graph compression techniques we introduce may be useful in real-time
 		applications, where low-probability outliers can be discarded, since it effectively
 		generates subgraphs which are often nearly optimal, but also much cheaper in terms
@@ -393,6 +437,17 @@ on the regression model to generate a subgraph $G'$, which is then solved using 
 		graph, that is, $|E| \sim |V|$, so we cannot argue significant savings in the run-time cost of
 		computing shortest path distance queries. \\
 		
+		Figure \ref{fig:thresh_plt} quantifies the inverse relationship between the quality of solution
+		(minimizing average percent error) and the level of graph compression increases (the edge
+		pruning threshold). The solution quality degrades (i.e. the average percent error increases)
+		exponentially while the graph compression ratio (\% of edges of the original graph pruned)
+		increases logarithmically. For instance, increasing the pruning threshold to 35 reduces
+		graphs on average by $71.2\%$, but the average path length is increased by $22.7\%$.
+		Therefore, with our current model, there appears to be limited effectiveness as we 
+		prune graphs more aggressively. For our purposes, these methods alone are not enough to
+		generate a sparse subgraph without suffering unacceptable error.\\
+		
+		
 		The methods we develop in this paper are widely applicable to all families of graph search
 		problems and are not limited to SP queries. The primary result of the paper is that we
 		show that Learning Heuristics using popular regression models can yield reasonable
@@ -400,6 +455,7 @@ on the regression model to generate a subgraph $G'$, which is then solved using 
 		particular interest in the original graph. In the case of HAPSP, we retain distances between
 		arbitarily vertices, with a high degree of fidelity. Graph compression frameworks may be
 		useful to other families of problems in graph theory.
+		
 	\subsection{Improvements \& Future Work}
 		There is much room for improvement within the HAPSP framework. Increasing the accuracy of the
 		regression model would allow graphs to be pruned more aggressively, since it would more
@@ -427,11 +483,14 @@ on the regression model to generate a subgraph $G'$, which is then solved using 
 	refer to the code repository on Github: https://github.com/brandon1011/apsp. 
 	\begin{thebibliography} {2} \normalsize
 	
-		 \bibitem{approx2} Baswana, and S. Kavitha, T.
+		 \bibitem{approx1} Baswana, and S. Kavitha, T.
          Faster Algorithms for All-Pairs Approximate Shortest Path in Undirected Graphs.
          Society for Industrial and Applied Mathematics,2010.39:7.p.2865-2896.
          
-		\bibitem{randGeom2} Dall, J. and Christensen, M.
+         \bibitem{randForest}
+         Breiman, Leo. Random Forests. Machine Learning. 2001. 45(1). p.5–32.
+         
+		\bibitem{randGeom} Dall, J. and Christensen, M.
 		Random Geometric Graphs.
 		Physical Review E 66 (2002).
 	
@@ -451,11 +510,11 @@ on the regression model to generate a subgraph $G'$, which is then solved using 
 		Communications of the ACM 5 (11),1962.
 		p.556.
 
-		\bibitem{approx1} Kanai, T. and Suzuki, H.
+		\bibitem{approx2} Kanai, T. and Suzuki, H.
 		Approximate shortest path on a polyhedral surface and its applications.
 		Computer-Aided Design 33 (2001).p.801-811.
 		
-		\bibitem{randGeom} Muthukrishnan, S. and Pandurangan G.
+		\bibitem{randGeom2} Muthukrishnan, S. and Pandurangan G.
 		The Bin-Covering Technique for Thresholding Random Geometric Graph Properties.
 		Society for Industrial and Applied Mathematics, 2005.
 		p.989-998.
@@ -466,7 +525,6 @@ on the regression model to generate a subgraph $G'$, which is then solved using 
          Cournapeau, D. and Brucher, M. and Perrot, M. and Duchesnay, E.
          Scikit-learn: Machine Learning in Python.
          Journal of Machine Learning Research, 2011.12.p.2825-2830.
- 
          
          \bibitem{neuralNet} Wang, X. and Qu, H. and Yi, Z.
          A modified pulse coupled neural network for shortest-path problem.

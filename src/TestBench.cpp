@@ -9,6 +9,11 @@
 TestBench::TestBench(string prefix, int num_tests): 
 	prefix(prefix), num_tests(num_tests), current(0),num_cmps(0) {
 
+	global_edge_count = 0;
+	global_edge_deleted = 0;
+	global_count = 0;
+	global_total_percent_err = 0.0;
+
 	for (int i=0; i<BIN_COUNT; i++)
 		error_bins[i] = 0;
 
@@ -50,6 +55,7 @@ TestBench::next(void) {
 	for (int i=0; i<num_vertices; i++) {
 		for (int j=i; j<num_vertices; j++) {
 			num_cmps++;
+			global_count++;
 
 			t1 = alg.lookup(i,j);
 			t0 = opt.lookup(i,j);
@@ -74,6 +80,8 @@ TestBench::next(void) {
 				percent_err = diff/t0;
 				accum_percent_slowdown += (diff/t0);
 				max_error = (percent_err > max_error) ? percent_err: max_error;
+
+				global_total_percent_err += percent_err;
 			}
 			error_bins[compute_bin(percent_err)] += 1;
 		}
@@ -82,17 +90,10 @@ TestBench::next(void) {
 	avg_percent_slowdown = accum_percent_slowdown/(1.0*count);
 	reduction = 1.0 - (alt_graph.get_num_edges()*1.0/graph.get_num_edges());
 
-	/*
-	cout << "Num Edges in original graph=" << graph.get_num_edges() << endl;
-	cout << "Num_Edges in  reduced graph=" << alt_graph.get_num_edges() << endl;
-	cout << "Reduction=" << reduction << endl;
-	cout << "Total difference=" << accum << endl;
-	cout << "\tcount=" << count << endl;
-	cout << "Average path difference=" << avg << endl;
-	cout << "Average percent cost increase=" << avg_percent_slowdown << "\n\n";
-	*/
+	global_edge_count += graph.get_num_edges();
+	global_edge_deleted += (graph.get_num_edges() - alt_graph.get_num_edges());
 
-	cout << graph.get_num_edges() << "," << alt_graph.get_num_edges() << ","
+	cerr << graph.get_num_edges() << "," << alt_graph.get_num_edges() << ","
 		<< reduction << "," << avg << "," << max_error << "," << avg_percent_slowdown
 		<< endl;
 
@@ -100,7 +101,12 @@ TestBench::next(void) {
 
 void
 TestBench::print_results(void) {
-	double freq;
+	double freq, compression_ratio, avg_percent_err;
+	compression_ratio = global_edge_deleted*1.0/global_edge_count;
+	avg_percent_err = global_total_percent_err/global_count;
+
+	cout << compression_ratio << "," << avg_percent_err << endl;
+
 	cout << "Results..." << endl;
 	for (int i=0; i<BIN_COUNT;i++)	/* Header */
 		cout << BIN_GRANULARITY*i <<",";

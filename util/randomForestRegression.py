@@ -1,5 +1,6 @@
 #!/usr/bin/python
 import sys
+import os
 
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.externals import joblib
@@ -81,23 +82,49 @@ if __name__ == "__main__":
 	try:
 		numGraphs = int(sys.argv[1])
 		namePrefix = sys.argv[2]
+
+		print '==============\nLoading model...'
+		model = RegressionModel()
+		model.loadModel()
+
+		for i in range(numGraphs):
+			filename = namePrefix + '_' + str(i)
+			print 'Edge pruning on ' + filename
+			g = SubGraph(filename + '.txt', filename + '.csv')
+			g.predict(model)
+			g.generate_subgraph()
+		print 'Done!'
+
 	except (IndexError, ValueError) as e:
-		print "ERROR! Invalid arguments. Usage:"
-		print "\tARG[1] = Number of graphs to predict"
-		print "\tARG[2] = Name prefix for the input/output files"
-		exit()
+		#print "ERROR! Invalid arguments. Usage:"
+		#print "\tARG[1] = Number of graphs to predict"
+		#print "\tARG[2] = Name prefix for the input/output files"
+		print 'Running sweep of cost threshold'
 
-	print '==============\nLoading model...'
-	model = RegressionModel()
-	model.loadModel()
+		OUTPUT = '/home/brandon/apsp/results/threshold_sweep.txt'
+		TEST_FILE = 'v1000_test1'
+		NUM_GRAPHS = 10
 
-	for i in range(numGraphs):
-		filename = namePrefix + '_' + str(i)
-		print 'Edge pruning on ' + filename
-		g = SubGraph(filename + '.txt', filename + '.csv')
-		g.predict(model)
-		g.generate_subgraph()
-	print 'Done!'
+		model = RegressionModel()
+		model.loadModel()
+		print 'Model loaded....'
+
+		thresholds = map(lambda x:x+10, range(26)) # T = (10,...,35)
+		for t in thresholds:
+			print 'Threshold = ' + str(t)																																																																																																																																																																																																																																																																																																																																																																																																																							
+			COST_THRESHOLD = t
+			for i in range(NUM_GRAPHS):
+				print '\tGraph ' + str(i)
+				filename = TEST_FILE + '_' +str(i)
+				g = SubGraph(filename + '.txt', filename + '.csv')
+				g.predict(model)
+				g.generate_subgraph()
+			os.system('/home/brandon/apsp/src/apsp >> ' + OUTPUT)
+
+
+
+
+
 
 
 

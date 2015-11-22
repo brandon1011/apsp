@@ -27,6 +27,12 @@ private:
 	int		error_bins[BIN_COUNT];
 	int		num_cmps;	/* Total num comparisons */
 
+	int		global_edge_count;
+	int		global_edge_deleted;
+	int		global_count;
+	double	global_total_percent_err;
+
+
 	int		compute_bin(double percent_err);
 };
 

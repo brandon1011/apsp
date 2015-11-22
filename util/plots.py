@@ -7,6 +7,7 @@ from numpy import genfromtxt
 
 RESULT_LIB = '/home/brandon/apsp/results/'
 TEST_FILE = '/home/brandon/apsp/results/percent_errors1.results'
+TEST_FILE_1 = '/home/brandon/apsp/results/threshold_sweep.csv'
 
 def error_plots(filename):
 	data = genfromtxt(filename,delimiter=',',skip_header=0)
@@ -30,4 +31,26 @@ def error_plots(filename):
 	plot.grid()
 	plot.show()
 
-error_plots(TEST_FILE)
+def thresh_plots(filename=TEST_FILE_1):
+	data = genfromtxt(filename,delimiter=',',skip_header=0)
+	xdata = data[:,0]
+	comp_ratio = data[:,1]
+	pct_error = data[:,2]
+
+	plot.figure(1)
+	plot.subplot(211)
+	plot.plot(xdata,comp_ratio,'bo',xdata,comp_ratio,'k')
+	plot.grid()
+	plot.ylabel('Graph Compression Ratio')
+
+	plot.subplot(212)
+	plot.plot(xdata,pct_error,'ro',xdata,pct_error,'k')
+	plot.xlabel('Threshold')
+	plot.ylabel('Average % Error')
+	plot.grid()
+	plot.show()
+
+
+thresh_plots()
+
+#error_plots(TEST_FILE)
