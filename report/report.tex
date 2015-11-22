@@ -1,8 +1,10 @@
-\documentclass[journal]{IEEEtran}
+\documentclass[10.5pt,journal]{IEEEtran}
 
 \usepackage{amsmath}
+\usepackage{graphicx}
 \usepackage{algorithm}
 \usepackage{algpseudocode}
+
 \begin{document}
 %
 % paper title
@@ -20,7 +22,9 @@ real-time performance constraints are valuable in practical route planning appli
 In this paper, we present a simple learning framework, using Random Forest Regression, to prune dense graphs
 in order to reduce the time and space complexities of computing distance queries between any two vertices in
 the graph. Using this scheme, we show that [FILL-IN] of edgegs can be pruned while only increasing the average
-path cost by [FILL-IN].
+path cost by [FILL-IN].\\
+
+In general, we introduce a scheme for efficiently compressing graphs while maintaining properties of interest.
 \end{abstract}
 
 \section{Introduction}
@@ -57,17 +61,26 @@ cost while producing a low cost solution.
 	
 	More recent research forcuses on finding ``Approximate Algorithms" for APSP, which declares a
 	lower bound on solution quality. A {\it{t-approximate}} algorithm for APSP requires that
-	for all $u,v$, $\delta(u,v) \le \hat{\delta}(u,v) \le t\delta(u,v)$.\\
-	{\bf{To Do: More detail}}
+	for all $u,v$, $\delta(u,v) \le \hat{\delta}(u,v) \le t\delta(u,v)$.
+	{\bf{[Ctations needed]}} \\
+	
+	Our approach is orthogonal to that of approximate algorithms: we wish to introduce an algorithm
+	that is statiscally close to the exact algorithm, i,e,. $\forall\,u,v \in G,\, 
+	\delta(u,v) \le \hat{\delta}(u,v) = p\cdot\delta(u,v)$, where $p$ follows some probability
+	distribution such that $\lim_{p\rightarrow\infty}Pr(p) = 0$.
 	
 \subsection{Our Contributions}
 	In this paper, we present a learning approach to graph pathfinding. Heuristic All Pairs Shortest Path (HAPSP)
 	finds approximate solutions to APSP on some graph $G$
 	using Random Forest regression to predict a useful subgraph $G'$ such that the cost of running an exact
 	APSP algorithm on $G'$ is significantly lower than on $G$, while preserving stronger solution quality
-	than a {\it{t-approximate}} algorithm.
+	than a {\it{t-approximate}} algorithm. \\
+	
+	Moreover, our Heuristic APSP scheme may be a useful tool for general graph-based applications: we show
+	significant gains by approximating graphs as compressed subgraphs, with acceptable losses in
+	optimality. 
 
-\section{Heuristic Generation}
+\section{Heuristic All Pairs Shortest Path}
 The goal of the heuristic is to characterize a graph in such a way to accurately predict
 the importance of a particular edge. The importance of an edge is defined in this paper to be the frequency of
 its occurences in a shortest path. An edge should be characterized in such a way that is general enough
@@ -82,7 +95,7 @@ using FW (exact APSP), the results of which are used to train the regression mod
 which accepts a new graph $G$ (the input to HAPSP), generates a feature set for $G$, using the predictions
 on the regression model to generate a subgraph $G'$, which is then solved using an exact APSP algorithm.
 
-\subsection{Overview}
+\subsection{Heuristic Edge Pruning Overview}
 	The general workflow for the offline and online phases of HAPSP are described below:
 	%%%%%%%%%%%%%%%%%%%%%%%%% ALG %%%%%%%%%%%%%%%%%%%%
 	\begin{algorithm}
@@ -112,7 +125,7 @@ on the regression model to generate a subgraph $G'$, which is then solved using 
 		\State Solve exact APSP on $G'$
 	\EndProcedure
 	\end{algorithmic}
-	\label{fig:alg_offline}
+	\label{fig:alg}
 	\end{algorithm}
 
 \subsection{Feature Selection}
@@ -137,6 +150,42 @@ on the regression model to generate a subgraph $G'$, which is then solved using 
 	
 \subsection{Regression Model}
 	{\bf{To Do: Info about Random Forest}}
+
+\subsection{Shortest Path Algorithm}
+	Exact algorithms for APSP are used in HAPSP in two places: (1) to generate labels on the training
+	data for building the gression model and (2) on the reduced subgraphs to answer approximate
+	distance queries of the form $\delta(u,v)$. There is also need for exact APSP in order to
+	compare solution quality on the full graph. \\
+	
+	For the comparison metrics, we use the standard FW algorithm, although more recent work
+	introduces faster algorithms that improve upon the asymptotic time complexity of FW. Such
+	is not the focus of the paper, exact APSP is a sub-routine of HAPSP and any algorithm that
+	improves upon FW can be used within HAPSP interchangeably; 
+	in this paper, FW will serve as a benchmark. The pseudo code for FW is shown in Alg:\\
+	%%%%%%%%%%
+	\begin{algorithm}
+	\caption{Standard Floyd Warshall}
+	\begin{algorithmic}[1]
+	\State $\forall u,v \in V$, initialize $\delta(u,v)\leftarrow\infty$
+	\State $\forall u \in V$, $\delta(u,u)\leftarrow 0$
+	\State $\forall e = (u,v)\in E,\,\delta(u,v) = w_e$
+	\For{$k \in (1,...,|V|)$}
+		\For{$i \in (1,...,|V|)$}
+			\For{$ j \in (1,...,|V|)$}
+				\State $\delta(i,j) \leftarrow \min(\delta(i,j),\delta(i,k)+\delta(k,j))$
+			\EndFor
+		\EndFor
+	\EndFor
+	\end{algorithmic}
+	\label{fig:alg2}
+	\end{algorithm}
+	
+	This algorithm is $\Theta(|V|^3)$. Therefore, our edge pruning techniques would not improve upon
+	the run-time of the exact APSP if we were to compare FW($G$) for some graph $G$, to FW($G'$),
+	where $G'$ is the edge-pruned graph constucted from $G$. In order exploit the reduction in graph
+	size, we instead apply a specialized algorithm, such as Johnson's Algorithm, which applies to
+	sparse graph. Therefore, if we can construct a representative sparse graph $G'$ of $G$,
+	we can improve upon the run-time of exact APSP.\\
 	
 \section{Experimental Results}
 	In this section, we outline the workflow for comparing the performance of HAPSP with the
@@ -160,10 +209,192 @@ on the regression model to generate a subgraph $G'$, which is then solved using 
 		than $T$. The weight of the edge is the Euclidean distance. Therefore, the a small $T$ produces a
 		graph that is more sparse than a larger one. In this report, we have empircally chose $T=0.4$
 		since we want a strong guarantee that the graph is connected, but also want $|E| << |V|^2$ to
-		avoid a trivial solution.\\
+		avoid a trivial solution to shortest distance queries.\\
 		
 		The number of vertices is uniformly selected at random in the domain (1000,1200), chosen empirically
 		based on the hardware limitations of the experiment machines.
 		
+	\subsection{Feature Generation}
+		Generating a feature set is required on all graphs for HAPSP. We construct our model with the 6
+		features described in section {\it{II.B}}. Generation of these features is straight-forward from
+		their description (see {\it{II.B}}). \\
+		
+		For the training set and cross validation data, it is also necessary to generate the data labels.
+		That is, to ``count" the actual number of occurences of each edge $e \in E$ in a shortest path.
+		This process is done by pre-pending that graph's feature set with a ``Count" field, which is
+		computed by executing Dikstra's Algorithm for single source on each $v\in V$ as the source. 
+		This computation is very expensive, but it is assumed that the model generation step can be
+		performed off-line. Dijkstra's algorithm is preferred to the standard FW because its implementation
+		of path reconstruction is more straight-forward than FW.
+		
 	\subsection{Random Forest Regression Model}
+		Our methods for measuring the quality of the random forest regression fit was performed independently
+		of the performance benchmarks for our algorithm. We use the popular Python library {\it{scikit-learn}}
+		{\bf{[Citations needed]}}
+		for generating our Random Forest regression model. We generate the model using 100 trees. The quality
+		of the fit is measured by computing the $R^2$ value of the regression:
+			\[R^2 = 1 - \frac{SS_{res}}{SS_{total}}\]
+			Where $SS_{res}$ and $SS_total$ are defined as:
+			\[SS_{res} = \sum_i (y_i-f_i)^2 \,\, SS_{total} = \sum_i (y_i-\bar{y})^2\]
+		For each label $y_i$, and its associated prediction $f_i$, where $\hat{y}$ is the average of
+		the $y_i$'s. For our analysis, we use {\it{10-Fold Cross Validation}} which is a standard
+		learning technique for assessing the quality of a model more accurately by comparing predictions
+		to ``new data". We divide the data into 10 equally sized partitions, $p_i$, where $i=1,...,k$, where
+		in our case $k=10$ and at each step $j = 0,...,k$, we train our model on all $p_i$, $i\in [k],
+		i\ne j$, and measure the residuals by predicting with the data in $p_j$. \\
+		
+		The results of the 10-Fold Cross Validation are show in Table \ref{fig:crossval_tbl}. \\
+		
+		\begin{table}[h!] \normalsize
+			\caption{Random Forest 10 Fold Cross Validation}
+			\centering
+			\begin{tabular}{|l|l|l|l|l|} \hline
+			Fold    & $R^2$ & $|$Res$|$ & Avg Error    & Avg \% Error \\ \hline 
+			1       & 0.57060        & 4700.390  & 11.554 	& 0.6516      \\
+			2       & 0.56713        & 4727.749  & 11.659 	& 0.6802        \\
+			3       & 0.55107        & 4682.334  & 11.501  	& 0.7050       \\
+			4       & 0.55022        & 4814.936  & 11.916 	& 0.7047        \\
+			5       & 0.55189        & 4738.939  & 11.690 	& 0.6812        \\
+			6       & 0.57748        & 4640.270 & 11.405 	& 0.6817        \\
+			7       & 0.56993        & 4613.565  & 11.483 	& 0.6929        \\
+			8       & 0.53312        & 4795.335  & 11.730 	& 0.7226        \\
+			9       & 0.51987        & 5068.946  & 12.527  	& 0.6928       \\
+			10      & 0.56030        & 4805.192  & 12.052  	& 0.7402        \\ \hline
+			Avg		& 0.55516        & 4758.766 & 11.7522 	& 0.6953        \\ \hline
+			\end{tabular}
+			\label{fig:crossval_tbl}
+		\end{table}
+		
+		The average $R^2$ value across all of the folds is $0.555$, which is not nearly the ideal
+		\textasciitilde 1. In addition, the average prediction error is 11.75, which is the average
+		difference of the real number of occurences in a shortest path measured by the optimal algorithm
+		and the predicted number of occurences. This number is significant since it is on the order
+		of the thresholds with which we use to decide whether to prune an edge (the threshold used in
+		experiments is 25). Moreover, the percent error which is:
+			\[\mbox{Percent Error} = \frac{|y_i - f_i|}{y_i}\]
+		is on average 69.5\%. \\
+		
+		This data suggests there is much room for improvement on this model.
+		Intuitively, it is hard to characterize the importance of a particular edge, disregarding the
+		specific topology of the graphs the model is trained on (in order to maintain generality for
+		new graphs). Additionally, time complexity is a limitation to the quality of the feature set since it is
+		important that features be generated efficiently, given that the Feature Generation step
+		is a part of the online phase of the HAPSP algorithm.
+	
+	\subsection{Performance Metrics}
+		The following sections summarizes the main results of this paper. Using the Regression model described
+		in section {\it{III.C}}, we apply HAPSP on newly generated random geometric graphs. 
+		The primary metric of interest in the percent loss of optimality. For, instance, the 
+		approximate shortest distance $\hat{\delta}(u,v)$ between two vertices $u,v$ returned by
+		HAPSP is {\it{p-suboptimal}} with respect to the actual shortest distance $\delta(u,v)$
+		by the relation:
+			\[p=\frac{\hat{\delta}(u,v) - \delta(u,v)}{\delta(u,v)}\]
+			
+		This metric quantifies the percentage increase in the cost of the path returned by HAPSP versus
+		the optimal algorithm. We are interested in the average and worst case numbers. \\
+		
+		In addition, it is useful to quantify graph compression ratio $R$, which measures the 
+		number of edges elminated in the HAPSP algorithm:
+			\[R = 1 - \frac{|E'|}{|E|}\]
+		where $E'$ is the result of running the BUILDSUBGRAPH procedure on G, described in
+		Algorithm \ref{fig:alg}. Intuitively, $R$ and $p$ should be inversely related. If we
+		decide to more aggressively prune our graphs, then we should expect that our solution quality
+		degrades further. However, it is important to attain a large $R$, since this decreases
+		the runtime of HAPSP. We aim to maximize $R$ (thereby decreasing runtime),
+		such that we suffer acceptable degredations of solution quality. Both quantities are empirical
+		and application specific. \\
+		
+		We performed our tests on Intel i7 hardware. 
+		
+	\subsection{Main Results}
+		
+		We perform 100 test instances with new randomly generated graphs. For each instance, we
+		compute the optimal APSP. Then, we generate a feature set for the graph and prune the graph
+		according the the SUBGRAPH procedure in Algorithm \ref{fig:alg}. Finally, we again compute
+		the optimal APSP on the subgraph. \\
+		
+		The results of this experiment are shown in Table \ref{fig:main_tbl}.
+		
+		\begin{table}[h!] \normalsize
+		\centering
+		\caption{Experimental Results of HAPSP vs FW}
+		\label{my-label}
+ 		\begin{tabular}{|l|l|} 								\hline
+		$|E|_{\mbox{avg}}$              & 81754.39			\\\hline
+		$|V|_{\mbox{avg}}$              & 1099.99			\\\hline
+		$R_{\mbox{avg}}$                & 0.50014945		\\\hline
+		Avg Error         				& 0.029065182		\\\hline
+		Avg \% Error 					& 0.097277609		\\\hline
+		Avg Max \% Error      			& 47.666938			\\\hline
+		Max \% Error			        & 225.251			\\\hline
+		\end{tabular}
+		\label{fig:main_tbl}
+		\end{table}
+	
+		The importance threshold $T$, for edge pruning was chosen empirically, with the intent of
+		maximizing $R$ while maintaining an acceptable loss in optimality. For this experiment,
+		$T$ varied between 20 and 25, depending on $|V|$. 
+		$R_{\mbox{avg}}$, the average graph compression ratio across all test instances was 50\%, while
+		the average solution cost suffered an increase of 9.73\%. More aggressive edge pruning led to
+		a steep increase in the average percent error. \\
+		
+		Another important metric is the maximum percent error, which quantifies the worst case scenario
+		for distance queries to HAPSP. The average maximum percent error was computed by computing the
+		max percent error for each test instance, and averaging across all 100 instances. The maximum
+		percent error was computed by taking the maximum percent error across all test instances. \\
+		
+		For many practical applications, the average percent error of \textasciitilde10\% is acceptable,
+		although the maximum percent error is very large (4,766\% on average and 22,525\% worst case).
+		A likely cause is our choice of interpretation on edge importance: we consider edges that only
+		{\it{frequenty}} appear in shortest paths as important. Consider an edge that connects two
+		vertices $e=(u,v)$ in a graph $G$. It may be the case that $e$ appears in very few shortest paths,
+		but significantly contributes to those paths. Also, our model fails to account for dependence of
+		edges on other edges: i.e., deleting an edge affects the relative importance of other edges.
+		In these scenarios, our scheme for graph reduction is insuffiient. \\
+		
+		However, if distance queries of this type are low probability events, practical systems can
+		still find utility in our HAPSP scheme. \\
+		
+		\begin{figure*}[] \centering
+		\includegraphics[width=5in]{../plots/errorplot_1.png} 
+		\caption{Solution quality of HAPSP vs APSP}
+		\label{fig:error_plt}
+		\end{figure*}
+		
+		Fig \ref{fig:error_plt} summarizes the frequency of percent error across all test instances. 
+		For each distance test ($\forall\, u,v\in V,\,\mbox{error} = \hat{\delta}(u,v) - \delta(u,v)$),
+		for each test instance $i$, $i = 1,...,100$, the percent error is binned by computing:
+			\[\lceil\frac{\hat{\delta}(u,v) - \delta(u,v)}{ \delta(u,v)}\rceil\]
+		Note that errors $< 0.025\%$ are rounded down and errors $\ge 20\%$ are binned to $20\%$.\\
+		
+		The data in Fig. \ref{fig:error_plt} show that a majority of distance queries are very close
+		to the optimal solution. 40\% of path queries increased by less than 0.025\% while 62\% of
+		queries increased by less than 2\%. \\
+		
+		Interestingly, the frequency of errors appears to follow an expoentially decreasing function,
+		which implies that large errors are highly unlikely events. The aggregate frequency for all
+		errors $>=$20\% is 10\%, which means that 90\% of all distance queries result in an cost
+		increase of $<20\%$.
+	
+	\subsection{Discussion}
+		Our results show that the Heuristic method for compressing graphs is a reasonable approximation
+		of the original graph. The average case loss in optimality is $<10\%$, with a majority of
+		queries with a loss of less than $<2\%$. We have also shown that the probability distribution
+		of errors follows a decaying exponential, such that intolerable errors are very low probability
+		events.\\
+		
+		However, our methods fail to demonstrate the ability of HAPSP to compress a graph 
+		significantly: the performance of our heuristic sharply declines if we prune more aggressively.
+		By reducing the size of the graph by 50$\%$, the subgraph we generate is still not a ``sparse"
+		graph, that is, $|E| \sim |V|$, so we cannot argue significant savings in the run-time cost of
+		computing shortest path distance queries. \\
+		
+		The methods we develop in this paper are widely applicable to all families of graph search
+		problems and are not limited to SP queries. The primary result of the paper is that we
+		show that Learning Heuristics using popular regression models can yield reasonable
+		approximations on dense graphs, in which the compressed graph retains properties of
+		particular interest in the original graph. In the case of HAPSP, we retain distances between
+		arbitarily vertices, with a high degree of fidelity. Graph compression frameworks may be
+		useful to other families of problems in graph theory.
+	\subsection{Future Work}
 \end{document}
