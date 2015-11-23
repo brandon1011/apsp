@@ -10,7 +10,8 @@
 % paper title
 % can use linebreaks \\ within to get better formatting as desired
 \title{Graph Learning Heuristic for All Pairs Shortest Path}
-\author{Brandon Wu, Miodrag Potkonjak}
+\author{Brandon Wu}
+
 \maketitle
 
 \begin{abstract}
@@ -441,7 +442,7 @@ on the regression model to generate a subgraph $G'$, which is then solved using 
 		(minimizing average percent error) and the level of graph compression increases (the edge
 		pruning threshold). The solution quality degrades (i.e. the average percent error increases)
 		exponentially while the graph compression ratio (\% of edges of the original graph pruned)
-		increases logarithmically. For instance, increasing the pruning threshold to 35 reduces
+		increases logarithmically. For instance, increasing the pruning threshold to $T=35$ reduces
 		graphs on average by $71.2\%$, but the average path length is increased by $22.7\%$.
 		Therefore, with our current model, there appears to be limited effectiveness as we 
 		prune graphs more aggressively. For our purposes, these methods alone are not enough to
@@ -485,10 +486,21 @@ on the regression model to generate a subgraph $G'$, which is then solved using 
 	
 		 \bibitem{approx1} Baswana, and S. Kavitha, T.
          Faster Algorithms for All-Pairs Approximate Shortest Path in Undirected Graphs.
-         Society for Industrial and Applied Mathematics,2010.39:7.p.2865-2896.
+         Society for Industrial and Applied Mathematics, 2010.
+         39:7. p.2865-2896.
+         
+         \bibitem{randGraph3}
+         Bollobas, B. 
+         Random Graphs.
+         Academic Press, 1985.
          
          \bibitem{randForest}
          Breiman, Leo. Random Forests. Machine Learning. 2001. 45(1). p.5–32.
+         
+         \bibitem{randForest2}
+         Cootes, T. and Ionita, M.C. and Lindner, C. and Sauer, P.
+         Robust and Accurate Shape Model Fitting Using Random Forest Regression Voting.
+         Computer Vision ECCV, 2012. p. 278-291.
          
 		\bibitem{randGeom} Dall, J. and Christensen, M.
 		Random Geometric Graphs.
@@ -499,17 +511,27 @@ on the regression model to generate a subgraph $G'$, which is then solved using 
 		Society for Industrial and Applied Mathematics, 2005.
 		p.156-165.
 		
-		\bibitem{johnson}
-		Johnson, Donald B.
-		Efficient algorithms for shortest paths in sparse networks.
-		Journal of the ACM 24 (1),1977:p.1–13.
-		
+		\bibitem{randForest3}
+		Gromping, U.
+		Variable Importance Assessment in Regression: Linear Regression versus Random Forest.
+		The American Statistician, 2009. 63:4.
+
 		\bibitem{floydWarshall}
 		Ingerman, Peter Z.
 		Algorithm 141: Path Matrix. 
 		Communications of the ACM 5 (11),1962.
 		p.556.
-
+		
+		\bibitem{dataMining2}
+		Inokuchi, A. and Washio, T. and Motoda, H.
+		Complete Mining of Frequent Patterns from Graphs: Mining Graph Data.
+		Machine Learning, 2003. 50: p.321-354.
+				
+		\bibitem{johnson}
+		Johnson, Donald B.
+		Efficient algorithms for shortest paths in sparse networks.
+		Journal of the ACM 24 (1),1977:p.1–13.
+		
 		\bibitem{approx2} Kanai, T. and Suzuki, H.
 		Approximate shortest path on a polyhedral surface and its applications.
 		Computer-Aided Design 33 (2001).p.801-811.
@@ -525,6 +547,11 @@ on the regression model to generate a subgraph $G'$, which is then solved using 
          Cournapeau, D. and Brucher, M. and Perrot, M. and Duchesnay, E.
          Scikit-learn: Machine Learning in Python.
          Journal of Machine Learning Research, 2011.12.p.2825-2830.
+         
+         \bibitem{dataMining} Takashi, W. and Motoda, H.
+         State of the art of graph-based data mining.
+         ACM SIGKDD Explorations Newsletter, 2003. 5 (1). p.59-68.
+
          
          \bibitem{neuralNet} Wang, X. and Qu, H. and Yi, Z.
          A modified pulse coupled neural network for shortest-path problem.
