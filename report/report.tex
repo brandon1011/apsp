@@ -67,7 +67,7 @@ cost while maintaining a high solution quality.
 	
 	More recent research forcuses on finding ``Approximate Algorithms" for APSP, which declares a
 	lower bound on solution quality. A {\it{t-approximate}} algorithm for APSP requires that
-	for all $u,v$, $\delta(u,v) \le \hat{\delta}(u,v) \le t\delta(u,v)$.
+	for all $u,v$, $\delta(u,v) \le \hat{\delta}(u,v) \le t\delta(u,v)$
 	\cite{approx1},\cite{approx2},\cite{neuralNet}. \\
 	
 	Our approach is orthogonal to that of approximate algorithms: we wish to introduce an algorithm
@@ -151,7 +151,7 @@ on the regression model to generate a subgraph $G'$, which is then solved using 
 	is an approximation for the number of shortest paths 
 	that $e$ occurs in between all pairs of vertices $u,v\in V$ for the solution of APSP on $G$, denoted as 
 	COUNT($e$). $G'$ is constructed from edges $e\in E$ where COUNT$(e)>T$ for some threshold $T$. 
-	The features used to characterize each edge in $G$ are the following:
+	The features used to characterize each edge in $G$ are the following: \\
 	\begin{itemize}
 		\item {\bf{Edge weight}}: $w_e$ for each edge $e\in E$. This takes time $\Theta(|E|)$ total time.
 		\item{\bf{Max connectivity (MC)}}: for each edge $e=(u,v)$, MC$(e)$=max($|$adj($u)|,|$adj($v)|$).
@@ -164,6 +164,7 @@ on the regression model to generate a subgraph $G'$, which is then solved using 
 			The cost is $\Theta(|E|)$.
 		\item{\bf{Number of edges}}: $|E|$, which is $\Theta(1)$.
 	\end{itemize}
+	
 	Therefore, the cost of the on-line feature generation step is $\Theta(|E|\log|E|)$.
 	
 \subsection{Regression Model}
@@ -229,7 +230,7 @@ on the regression model to generate a subgraph $G'$, which is then solved using 
 	In this section, we outline the workflow for comparing the performance of HAPSP with the
 	standard optimal algorithms. In the first section, we outline the data generation process
 	for the graphs used in training the model and testing. Next, we briefly discuss the quality
-	of the regression model.
+	of the regression model. \\
 	
 	Then we discuss our experimental methods and display our results. This section is followed by
 	a summary of the results and discussion.
@@ -272,12 +273,12 @@ on the regression model to generate a subgraph $G'$, which is then solved using 
 		for generating our Random Forest regression model. We generate the model using 100 trees. The quality
 		of the fit is measured by computing the $R^2$ value of the regression:
 			\[R^2 = 1 - \frac{SS_{res}}{SS_{total}}\]
-			Where $SS_{res}$ and $SS_total$ are defined as:
+			Where $SS_{res}$ and $SS_{total}$ are defined as:
 			\[SS_{res} = \sum_i (y_i-f_i)^2 \,\, SS_{total} = \sum_i (y_i-\bar{y})^2\]
 		For each label $y_i$, and its associated prediction $f_i$, where $\hat{y}$ is the average of
 		the $y_i$'s. For our analysis, we use {\it{10-Fold Cross Validation}} which is a standard
 		learning technique for assessing the quality of a model more accurately by comparing predictions
-		to ``new data". We divide the data into 10 equally sized partitions, $p_i$, where $i=1,...,k$, where
+		to ``new data". We divide the data into 10 equally sized partitions, $p_i$, where $i=1,...,k$;
 		in our case $k=10$ and at each step $j = 0,...,k$, we train our model on all $p_i$, $i\in [k],
 		i\ne j$, and measure the residuals by predicting with the data in $p_j$. \\
 		
